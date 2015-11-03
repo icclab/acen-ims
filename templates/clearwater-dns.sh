@@ -37,6 +37,22 @@ zone "$zone" IN {
 };
 EOF
 
+cat <<EOF > /etc/bind/named.conf.options
+options {
+  directory "/var/cache/bind";
+  allow-recursion { any; };
+  allow-query { any; };
+  allow-query-cache { any; };
+  forwarders {
+    8.8.8.8;
+  };
+  forward only;
+  dnssec-validation no;
+  auth-nxdomain no;    # conform to RFC1035
+  listen-on-v6 { any; };
+};
+EOF
+
 # Create basic zone config
 cat <<EOF > /var/lib/bind/db.$zone
 \$ORIGIN $zone.
