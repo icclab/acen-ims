@@ -98,16 +98,6 @@ case $hostname in
     ;;
 esac
 
-# Set local DNS records
-cat <<EOF >> /etc/hosts
-$ralf_local_ip ralf.example.com
-$homer_local_ip homer.example.com
-$ellis_local_ip ellis.example.com
-$bono_local_ip bono.example.com
-$sprout_local_ip sprout.example.com
-$homestead_local_ip homestead.example.com
-EOF
-
 # Wait for etcd
 /usr/share/clearwater/clearwater-etcd/scripts/wait_for_etcd
 
@@ -147,7 +137,7 @@ if [[ $hostname == 'ellis' ]]; then
 fi
 
 # Update DNS server
-if [[ $hostname != 'bono' ]]; then
+if [[ $hostname == 'ellis' || $hostname == 'homer' || $hostname == 'homestead' || $hostname == 'ralf' ]]; then
 retries=0
 while ! { nsupdate -y "$zone:$dnssec_key" -v << EOF
 zone $zone
@@ -184,4 +174,24 @@ do
 done
 fi
 
+if [[ $hostname == 'sprout' ]]; then
+retries=0
+while ! { nsupdate -y "$zone:$dnssec_key" -v << EOF
+server $dns_ip
+update add $hostname.$zone. 30 A $public_ip
+update add $hostname.$zone. 30 NAPTR 0 0 "s" "SIP+D2T" "" _sip._tcp.$hostname.$zone.
+update add _sip._tcp.$hostname.$zone. 30 SRV 0 0 5054 $hostname.$zone.
+update add icscf.$hostname.$zone. 30 NAPTR 0 0 "s" "SIP+D2T" "" _sip._tcp.icscf.$hostname.$zone.
+update add _sip._tcp.icscf.$hostname.$zone. 30 SRV 0 0 5052 $hostname.$zone.
+send
+EOF
+} && [ $retries -lt 10 ]
+do
+retries=$((retries + 1))
+echo 'nsupdate failed - retrying (retry '$retries')...'
+sleep 5
+done
+fi
+
+echo 'nameserver $dns_ip' > /etc/dnsmasq.resolv.conf
 service dnsmasq force-reload
