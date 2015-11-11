@@ -87,7 +87,7 @@ resources:
         - port: { get_resource: ralf_port }
       user_data:
         str_replace:
-          template: { get_file: clearwater-deploy.sh }
+          template: { get_file: ../scripts/clearwater-deploy.sh }
           params:
             $local_ip: { get_attr: [ralf_port, fixed_ips, 0, ip_address] }
             $public_ip: { get_attr: [ralf_floating_ip, floating_ip_address] }
@@ -142,7 +142,7 @@ resources:
         - port: { get_resource: homer_port }
       user_data:
         str_replace:
-          template: { get_file: clearwater-deploy.sh }
+          template: { get_file: ../scripts/clearwater-deploy.sh }
           params:
             $local_ip: { get_attr: [homer_port, fixed_ips, 0, ip_address] }
             $public_ip: { get_attr: [homer_floating_ip, floating_ip_address] }
@@ -194,7 +194,7 @@ resources:
         - port: { get_resource: ellis_port }
       user_data:
         str_replace:
-          template: { get_file: clearwater-deploy.sh }
+          template: { get_file: ../scripts/clearwater-deploy.sh }
           params:
             $local_ip: { get_attr: [ellis_port, fixed_ips, 0, ip_address] }
             $public_ip: { get_attr: [ellis_floating_ip, floating_ip_address] }
@@ -246,7 +246,7 @@ resources:
         - port: { get_resource: bono_port }
       user_data:
         str_replace:
-          template: { get_file: clearwater-deploy.sh }
+          template: { get_file: ../scripts/clearwater-deploy.sh }
           params:
             $local_ip: { get_attr: [bono_port, fixed_ips, 0, ip_address] }
             $public_ip: { get_attr: [bono_floating_ip, floating_ip_address] }
@@ -313,7 +313,7 @@ resources:
         - port: { get_resource: sprout_port }
       user_data:
         str_replace:
-          template: { get_file: clearwater-deploy.sh }
+          template: { get_file: ../scripts/clearwater-deploy.sh }
           params:
             $local_ip: { get_attr: [sprout_port, fixed_ips, 0, ip_address] }
             $public_ip: { get_attr: [sprout_floating_ip, floating_ip_address] }
@@ -383,7 +383,7 @@ resources:
         - port: { get_resource: homestead_port }
       user_data:
         str_replace:
-          template: { get_file: clearwater-deploy.sh }
+          template: { get_file: ../scripts/clearwater-deploy.sh }
           params:
             $local_ip: { get_attr: [homestead_port, fixed_ips, 0, ip_address] }
             $public_ip: { get_attr: [homestead_floating_ip, floating_ip_address] }
@@ -435,7 +435,7 @@ resources:
         - port: { get_resource: dns_port }
       user_data:
         str_replace:
-          template: { get_file: clearwater-dns.sh }
+          template: { get_file: ../scripts/clearwater-dns.sh }
           params:
             $zone: { get_param: zone }
             $dnssec_key: { get_param: dnssec_key }
