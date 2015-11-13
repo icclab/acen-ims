@@ -18,7 +18,9 @@ OpenStack template input properties:
 
 After providing input properties create a clearwater stack:
 
+```
 heat stack-create -f HEAT/templates/clearwater-openstack.yaml clearwater
+```
 
 ### CloudStack
  - CloudStack template orchestrates Project Clearwater components on CloudStack cloud (with advanced networking) using resources defined in CloudStack HEAT pluging (https://github.com/icclab/cloudstack-heat).
@@ -46,8 +48,9 @@ CloudStack template input properties:
 
 After providing input properties create a clearwater stack:
 
+```
 heat stack-create -f HEAT/templates/clearwater-cloudstack.yaml clearwater
-
+```
 
 ## Cloudify blueprints
  - TBD
