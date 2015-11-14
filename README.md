@@ -23,7 +23,7 @@ heat stack-create -f HEAT/templates/clearwater-openstack.yaml clearwater
 ```
 
 ### CloudStack
- - CloudStack template orchestrates Project Clearwater components on CloudStack cloud (with advanced networking) using resources defined in CloudStack HEAT pluging (https://github.com/icclab/cloudstack-heat).
+ - CloudStack template orchestrates Project Clearwater components on CloudStack cloud (with advanced networking) using resources defined in CloudStack HEAT plugin (https://github.com/icclab/cloudstack-heat).
 
 CloudStack template input properties:
  - CloudStack authentication properties
