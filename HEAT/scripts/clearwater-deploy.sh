@@ -104,7 +104,7 @@ esac
 # Ellis uploads shared config
 if [[ $hostname == 'ellis' ]]; then
 touch /etc/clearwater/shared_config
-cat <<EOF >> /etc/clearwater/shared_config
+cat <<EOF > /etc/clearwater/shared_config
 # Deployment definitions
 home_domain=$zone
 sprout_hostname=sprout.$zone
@@ -117,7 +117,7 @@ xdms_hostname=homer.$zone:7888
 smtp_smarthost=localhost
 smtp_username=username
 smtp_password=password
-email_recovery_sender=clearwater@example.org
+email_recovery_sender=clearwater@$zone
 
 # Keys
 signup_key=mvPC5Zza
