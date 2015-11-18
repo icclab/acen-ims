@@ -136,7 +136,6 @@ resources:
       service_offering_id: { get_param: service_offering_id }
       network_ids: [ { get_attr: [ clearwater_network, id ] } ]
       zone_id: { get_param: zone_id }
-      user_data: ""
       user_data:
         str_replace:
           template: { get_file: ../scripts/clearwater-deploy.sh }
@@ -152,7 +151,7 @@ resources:
             $zone: { get_param: dns_zone }
             $dnssec_key: { get_param: dnssec_key }
             $dns_ip: { get_attr: [dns_floating_ip, ipaddress] }
-            $hostname: 'ralf'
+            $hostname: 'homer'
             $public_ssh_key: { get_param: public_ssh_key }
 
   homer_floating_ip:
@@ -184,7 +183,6 @@ resources:
       service_offering_id: { get_param: service_offering_id }
       network_ids: [ { get_attr: [ clearwater_network, id ] } ]
       zone_id: { get_param: zone_id }
-      user_data: ""
       user_data:
         str_replace:
           template: { get_file: ../scripts/clearwater-deploy.sh }
@@ -200,7 +198,7 @@ resources:
             $zone: { get_param: dns_zone }
             $dnssec_key: { get_param: dnssec_key }
             $dns_ip: { get_attr: [dns_floating_ip, ipaddress] }
-            $hostname: 'ralf'
+            $hostname: 'ellis'
             $public_ssh_key: { get_param: public_ssh_key }
 
   ellis_floating_ip:
@@ -232,7 +230,6 @@ resources:
       service_offering_id: { get_param: service_offering_id }
       network_ids: [ { get_attr: [ clearwater_network, id ] } ]
       zone_id: { get_param: zone_id }
-      user_data: ""
       user_data:
         str_replace:
           template: { get_file: ../scripts/clearwater-deploy.sh }
@@ -248,7 +245,7 @@ resources:
             $zone: { get_param: dns_zone }
             $dnssec_key: { get_param: dnssec_key }
             $dns_ip: { get_attr: [dns_floating_ip, ipaddress] }
-            $hostname: 'ralf'
+            $hostname: 'bono'
             $public_ssh_key: { get_param: public_ssh_key }
 
   bono_floating_ip:
@@ -280,7 +277,6 @@ resources:
       service_offering_id: { get_param: service_offering_id }
       network_ids: [ { get_attr: [ clearwater_network, id ] } ]
       zone_id: { get_param: zone_id }
-      user_data: ""
       user_data:
         str_replace:
           template: { get_file: ../scripts/clearwater-deploy.sh }
@@ -296,7 +292,7 @@ resources:
             $zone: { get_param: dns_zone }
             $dnssec_key: { get_param: dnssec_key }
             $dns_ip: { get_attr: [dns_floating_ip, ipaddress] }
-            $hostname: 'ralf'
+            $hostname: 'sprout'
             $public_ssh_key: { get_param: public_ssh_key }
 
   sprout_floating_ip:
@@ -328,7 +324,6 @@ resources:
       service_offering_id: { get_param: service_offering_id }
       network_ids: [ { get_attr: [ clearwater_network, id ] } ]
       zone_id: { get_param: zone_id }
-      user_data: ""
       user_data:
         str_replace:
           template: { get_file: ../scripts/clearwater-deploy.sh }
@@ -344,7 +339,7 @@ resources:
             $zone: { get_param: dns_zone }
             $dnssec_key: { get_param: dnssec_key }
             $dns_ip: { get_attr: [dns_floating_ip, ipaddress] }
-            $hostname: 'ralf'
+            $hostname: 'homestead'
             $public_ssh_key: { get_param: public_ssh_key }
 
   homestead_floating_ip:
