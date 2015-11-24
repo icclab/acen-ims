@@ -52,7 +52,6 @@ parameters:
   dns_zone:
     type: string
     description: Clearwater DNS zone
-    default: ims.com
 
   dnssec_key:
     type: string
@@ -91,9 +90,9 @@ resources:
       zone_id: { get_param: zone_id }
       user_data:
         str_replace:
-          template: { get_file: ../scripts/clearwater-deploy.sh }
+          template: { get_file: ../scripts/clearwater-deploy-simple.sh }
           params:
-            $local_ip: { get_attr: [ ralf_floating_ip, ipaddress ] }
+            $local_ip: '$local_ip'
             $public_ip: { get_attr: [ ralf_floating_ip, ipaddress ] }
             $ralf_local_ip: { get_attr: [ ralf_floating_ip, ipaddress ] }
             $homer_local_ip: { get_attr: [ homer_floating_ip, ipaddress ] }
@@ -138,9 +137,9 @@ resources:
       zone_id: { get_param: zone_id }
       user_data:
         str_replace:
-          template: { get_file: ../scripts/clearwater-deploy.sh }
+          template: { get_file: ../scripts/clearwater-deploy-simple.sh }
           params:
-            $local_ip: { get_attr: [ homer_floating_ip, ipaddress ] }
+            $local_ip: '$local_ip'
             $public_ip: { get_attr: [ homer_floating_ip, ipaddress ] }
             $ralf_local_ip: { get_attr: [ ralf_floating_ip, ipaddress ] }
             $homer_local_ip: { get_attr: [ homer_floating_ip, ipaddress ] }
@@ -185,9 +184,9 @@ resources:
       zone_id: { get_param: zone_id }
       user_data:
         str_replace:
-          template: { get_file: ../scripts/clearwater-deploy.sh }
+          template: { get_file: ../scripts/clearwater-deploy-simple.sh }
           params:
-            $local_ip: { get_attr: [ ellis_floating_ip, ipaddress ] }
+            $local_ip: '$local_ip'
             $public_ip: { get_attr: [ ellis_floating_ip, ipaddress ] }
             $ralf_local_ip: { get_attr: [ ralf_floating_ip, ipaddress ] }
             $homer_local_ip: { get_attr: [ homer_floating_ip, ipaddress ] }
@@ -232,9 +231,9 @@ resources:
       zone_id: { get_param: zone_id }
       user_data:
         str_replace:
-          template: { get_file: ../scripts/clearwater-deploy.sh }
+          template: { get_file: ../scripts/clearwater-deploy-simple.sh }
           params:
-            $local_ip: { get_attr: [ bono_floating_ip, ipaddress ] }
+            $local_ip: '$local_ip'
             $public_ip: { get_attr: [ bono_floating_ip, ipaddress ] }
             $ralf_local_ip: { get_attr: [ ralf_floating_ip, ipaddress ] }
             $homer_local_ip: { get_attr: [ homer_floating_ip, ipaddress ] }
@@ -279,9 +278,9 @@ resources:
       zone_id: { get_param: zone_id }
       user_data:
         str_replace:
-          template: { get_file: ../scripts/clearwater-deploy.sh }
+          template: { get_file: ../scripts/clearwater-deploy-simple.sh }
           params:
-            $local_ip: { get_attr: [ sprout_floating_ip, ipaddress ] }
+            $local_ip: '$local_ip'
             $public_ip: { get_attr: [ sprout_floating_ip, ipaddress ] }
             $ralf_local_ip: { get_attr: [ ralf_floating_ip, ipaddress ] }
             $homer_local_ip: { get_attr: [ homer_floating_ip, ipaddress ] }
@@ -326,9 +325,9 @@ resources:
       zone_id: { get_param: zone_id }
       user_data:
         str_replace:
-          template: { get_file: ../scripts/clearwater-deploy.sh }
+          template: { get_file: ../scripts/clearwater-deploy-simple.sh }
           params:
-            $local_ip: { get_attr: [ homestead_floating_ip, ipaddress ] }
+            $local_ip: '$local_ip'
             $public_ip: { get_attr: [ homestead_floating_ip, ipaddress ] }
             $ralf_local_ip: { get_attr: [ ralf_floating_ip, ipaddress ] }
             $homer_local_ip: { get_attr: [ homer_floating_ip, ipaddress ] }
