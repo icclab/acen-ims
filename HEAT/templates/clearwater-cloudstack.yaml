@@ -41,6 +41,34 @@ parameters:
     description: Clearwater network netmask
     default: 255.255.255.0
 
+  ralf_local_ip:
+    type: string
+    default: 10.0.0.11
+
+  ellis_local_ip:
+    type: string
+    default: 10.0.0.12
+
+  homer_local_ip:
+    type: string
+    default: 10.0.0.13
+
+  homestead_local_ip:
+    type: string
+    default: 10.0.0.14
+
+  bono_local_ip:
+    type: string
+    default: 10.0.0.15
+
+  sprout_local_ip:
+    type: string
+    default: 10.0.0.16
+
+  dns_local_ip:
+    type: string
+    default: 10.0.0.5
+
   vpc_id:
     type: string
     description: CloudStack VPC ID
@@ -88,22 +116,23 @@ resources:
       service_offering_id: { get_param: service_offering_id }
       network_ids: [ { get_attr: [ clearwater_network, id ] } ]
       zone_id: { get_param: zone_id }
+      ipaddress: { get_param: ralf_local_ip }
       user_data:
         str_replace:
           template: { get_file: ../scripts/clearwater-deploy-simple.sh }
           params:
-            $local_ip: '$local_ip'
+            $hostname: 'ralf'
+            $local_ip: { get_param: ralf_local_ip }
             $public_ip: { get_attr: [ ralf_floating_ip, ipaddress ] }
-            $ralf_local_ip: { get_attr: [ ralf_floating_ip, ipaddress ] }
-            $homer_local_ip: { get_attr: [ homer_floating_ip, ipaddress ] }
-            $ellis_local_ip: { get_attr: [ ellis_floating_ip, ipaddress ] }
-            $bono_local_ip: { get_attr: [ bono_floating_ip, ipaddress ] }
-            $sprout_local_ip: { get_attr: [ sprout_floating_ip, ipaddress ] }
-            $homestead_local_ip: { get_attr: [ homestead_floating_ip, ipaddress ] }
+            $ralf_local_ip: { get_param: ralf_local_ip }
+            $homer_local_ip: { get_param: homer_local_ip }
+            $ellis_local_ip: { get_param: ellis_local_ip }
+            $bono_local_ip: { get_param: bono_local_ip }
+            $sprout_local_ip: { get_param: sprout_local_ip }
+            $homestead_local_ip: { get_param: homestead_local_ip }
             $zone: { get_param: dns_zone }
             $dnssec_key: { get_param: dnssec_key }
             $dns_ip: { get_attr: [dns_floating_ip, ipaddress] }
-            $hostname: 'ralf'
             $public_ssh_key: { get_param: public_ssh_key }
 
   ralf_floating_ip:
@@ -135,22 +164,23 @@ resources:
       service_offering_id: { get_param: service_offering_id }
       network_ids: [ { get_attr: [ clearwater_network, id ] } ]
       zone_id: { get_param: zone_id }
+      ipaddress: { get_param: homer_local_ip }
       user_data:
         str_replace:
           template: { get_file: ../scripts/clearwater-deploy-simple.sh }
           params:
-            $local_ip: '$local_ip'
+            $hostname: 'homer'
+            $local_ip: { get_param: homer_local_ip }
             $public_ip: { get_attr: [ homer_floating_ip, ipaddress ] }
-            $ralf_local_ip: { get_attr: [ ralf_floating_ip, ipaddress ] }
-            $homer_local_ip: { get_attr: [ homer_floating_ip, ipaddress ] }
-            $ellis_local_ip: { get_attr: [ ellis_floating_ip, ipaddress ] }
-            $bono_local_ip: { get_attr: [ bono_floating_ip, ipaddress ] }
-            $sprout_local_ip: { get_attr: [ sprout_floating_ip, ipaddress ] }
-            $homestead_local_ip: { get_attr: [ homestead_floating_ip, ipaddress ] }
+            $ralf_local_ip: { get_param: ralf_local_ip }
+            $homer_local_ip: { get_param: homer_local_ip }
+            $ellis_local_ip: { get_param: ellis_local_ip }
+            $bono_local_ip: { get_param: bono_local_ip }
+            $sprout_local_ip: { get_param: sprout_local_ip }
+            $homestead_local_ip: { get_param: homestead_local_ip }
             $zone: { get_param: dns_zone }
             $dnssec_key: { get_param: dnssec_key }
             $dns_ip: { get_attr: [dns_floating_ip, ipaddress] }
-            $hostname: 'homer'
             $public_ssh_key: { get_param: public_ssh_key }
 
   homer_floating_ip:
@@ -182,22 +212,23 @@ resources:
       service_offering_id: { get_param: service_offering_id }
       network_ids: [ { get_attr: [ clearwater_network, id ] } ]
       zone_id: { get_param: zone_id }
+      ipaddress: { get_param: ellis_local_ip }
       user_data:
         str_replace:
           template: { get_file: ../scripts/clearwater-deploy-simple.sh }
           params:
-            $local_ip: '$local_ip'
+            $hostname: 'ellis'
+            $local_ip: { get_param: ellis_local_ip }
             $public_ip: { get_attr: [ ellis_floating_ip, ipaddress ] }
-            $ralf_local_ip: { get_attr: [ ralf_floating_ip, ipaddress ] }
-            $homer_local_ip: { get_attr: [ homer_floating_ip, ipaddress ] }
-            $ellis_local_ip: { get_attr: [ ellis_floating_ip, ipaddress ] }
-            $bono_local_ip: { get_attr: [ bono_floating_ip, ipaddress ] }
-            $sprout_local_ip: { get_attr: [ sprout_floating_ip, ipaddress ] }
-            $homestead_local_ip: { get_attr: [ homestead_floating_ip, ipaddress ] }
+            $ralf_local_ip: { get_param: ralf_local_ip }
+            $homer_local_ip: { get_param: homer_local_ip }
+            $ellis_local_ip: { get_param: ellis_local_ip }
+            $bono_local_ip: { get_param: bono_local_ip }
+            $sprout_local_ip: { get_param: sprout_local_ip }
+            $homestead_local_ip: { get_param: homestead_local_ip }
             $zone: { get_param: dns_zone }
             $dnssec_key: { get_param: dnssec_key }
             $dns_ip: { get_attr: [dns_floating_ip, ipaddress] }
-            $hostname: 'ellis'
             $public_ssh_key: { get_param: public_ssh_key }
 
   ellis_floating_ip:
@@ -229,22 +260,23 @@ resources:
       service_offering_id: { get_param: service_offering_id }
       network_ids: [ { get_attr: [ clearwater_network, id ] } ]
       zone_id: { get_param: zone_id }
+      ipaddress: { get_param: bono_local_ip }
       user_data:
         str_replace:
           template: { get_file: ../scripts/clearwater-deploy-simple.sh }
           params:
-            $local_ip: '$local_ip'
+            $hostname: 'bono'
+            $local_ip: { get_param: bono_local_ip }
             $public_ip: { get_attr: [ bono_floating_ip, ipaddress ] }
-            $ralf_local_ip: { get_attr: [ ralf_floating_ip, ipaddress ] }
-            $homer_local_ip: { get_attr: [ homer_floating_ip, ipaddress ] }
-            $ellis_local_ip: { get_attr: [ ellis_floating_ip, ipaddress ] }
-            $bono_local_ip: { get_attr: [ bono_floating_ip, ipaddress ] }
-            $sprout_local_ip: { get_attr: [ sprout_floating_ip, ipaddress ] }
-            $homestead_local_ip: { get_attr: [ homestead_floating_ip, ipaddress ] }
+            $ralf_local_ip: { get_param: ralf_local_ip }
+            $homer_local_ip: { get_param: homer_local_ip }
+            $ellis_local_ip: { get_param: ellis_local_ip }
+            $bono_local_ip: { get_param: bono_local_ip }
+            $sprout_local_ip: { get_param: sprout_local_ip }
+            $homestead_local_ip: { get_param: homestead_local_ip }
             $zone: { get_param: dns_zone }
             $dnssec_key: { get_param: dnssec_key }
             $dns_ip: { get_attr: [dns_floating_ip, ipaddress] }
-            $hostname: 'bono'
             $public_ssh_key: { get_param: public_ssh_key }
 
   bono_floating_ip:
@@ -276,22 +308,23 @@ resources:
       service_offering_id: { get_param: service_offering_id }
       network_ids: [ { get_attr: [ clearwater_network, id ] } ]
       zone_id: { get_param: zone_id }
+      ipaddress: { get_param: sprout_local_ip }
       user_data:
         str_replace:
           template: { get_file: ../scripts/clearwater-deploy-simple.sh }
           params:
-            $local_ip: '$local_ip'
+            $hostname: 'sprout'
+            $local_ip: { get_param: sprout_local_ip }
             $public_ip: { get_attr: [ sprout_floating_ip, ipaddress ] }
-            $ralf_local_ip: { get_attr: [ ralf_floating_ip, ipaddress ] }
-            $homer_local_ip: { get_attr: [ homer_floating_ip, ipaddress ] }
-            $ellis_local_ip: { get_attr: [ ellis_floating_ip, ipaddress ] }
-            $bono_local_ip: { get_attr: [ bono_floating_ip, ipaddress ] }
-            $sprout_local_ip: { get_attr: [ sprout_floating_ip, ipaddress ] }
-            $homestead_local_ip: { get_attr: [ homestead_floating_ip, ipaddress ] }
+            $ralf_local_ip: { get_param: ralf_local_ip }
+            $homer_local_ip: { get_param: homer_local_ip }
+            $ellis_local_ip: { get_param: ellis_local_ip }
+            $bono_local_ip: { get_param: bono_local_ip }
+            $sprout_local_ip: { get_param: sprout_local_ip }
+            $homestead_local_ip: { get_param: homestead_local_ip }
             $zone: { get_param: dns_zone }
             $dnssec_key: { get_param: dnssec_key }
             $dns_ip: { get_attr: [dns_floating_ip, ipaddress] }
-            $hostname: 'sprout'
             $public_ssh_key: { get_param: public_ssh_key }
 
   sprout_floating_ip:
@@ -323,22 +356,23 @@ resources:
       service_offering_id: { get_param: service_offering_id }
       network_ids: [ { get_attr: [ clearwater_network, id ] } ]
       zone_id: { get_param: zone_id }
+      ipaddress: { get_param: homestead_local_ip }
       user_data:
         str_replace:
           template: { get_file: ../scripts/clearwater-deploy-simple.sh }
           params:
-            $local_ip: '$local_ip'
+            $hostname: 'homestead'
+            $local_ip: { get_param: homestead_local_ip }
             $public_ip: { get_attr: [ homestead_floating_ip, ipaddress ] }
-            $ralf_local_ip: { get_attr: [ ralf_floating_ip, ipaddress ] }
-            $homer_local_ip: { get_attr: [ homer_floating_ip, ipaddress ] }
-            $ellis_local_ip: { get_attr: [ ellis_floating_ip, ipaddress ] }
-            $bono_local_ip: { get_attr: [ bono_floating_ip, ipaddress ] }
-            $sprout_local_ip: { get_attr: [ sprout_floating_ip, ipaddress ] }
-            $homestead_local_ip: { get_attr: [ homestead_floating_ip, ipaddress ] }
+            $ralf_local_ip: { get_param: homestead_local_ip }
+            $homer_local_ip: { get_param: homer_local_ip }
+            $ellis_local_ip: { get_param: ellis_local_ip }
+            $bono_local_ip: { get_param: bono_local_ip }
+            $sprout_local_ip: { get_param: sprout_local_ip }
+            $homestead_local_ip: { get_param: homestead_local_ip }
             $zone: { get_param: dns_zone }
             $dnssec_key: { get_param: dnssec_key }
             $dns_ip: { get_attr: [dns_floating_ip, ipaddress] }
-            $hostname: 'homestead'
             $public_ssh_key: { get_param: public_ssh_key }
 
   homestead_floating_ip:
@@ -370,6 +404,7 @@ resources:
       service_offering_id: { get_param: service_offering_id }
       network_ids: [ { get_attr: [ clearwater_network, id ] } ]
       zone_id: { get_param: zone_id }
+      ipaddress: { get_param: dns_local_ip }
       user_data:
         str_replace:
           template: { get_file: ../scripts/clearwater-dns.sh }

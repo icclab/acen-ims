@@ -19,15 +19,8 @@
 # Redirects output
 exec > >(tee -a /var/log/clearwater-heat.log) 2>&1
 
-# Add public ip to eth0 interface so it can be binded
-ip addr add $public_ip/32 dev eth0
-
 # Temporary DNS settings
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
-
-# Get local IP
-ips=$(hostname -I)
-local_ip=$(set -- $ips; echo $1)
 
 # Inject public SSH keys
 echo $public_ssh_key >> /root/.ssh/authorized_keys
