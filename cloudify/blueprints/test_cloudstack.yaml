@@ -17,6 +17,7 @@ tosca_definitions_version: cloudify_dsl_1_0
 imports:
   - http://www.getcloudify.org/spec/cloudify/3.2.1/types.yaml
   - http://www.getcloudify.org/spec/cloudstack-plugin/1.2.1/plugin.yaml
+  - http://www.getcloudify.org/spec/fabric-plugin/1.2.1/plugin.yaml
 
 inputs:
   cs_api_key:
@@ -70,6 +71,22 @@ node_templates:
         target: test_network
       - type: cloudify.cloudstack.virtual_machine_connected_to_floating_ip
         target: test_floatingip
+
+  test_application:
+    type: cloudify.nodes.ApplicationServer
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        start:
+          implementation: fabric.fabric_plugin.tasks.run_script
+          inputs:
+            script_path: script.sh
+            fabric_env:
+              user: ubuntu
+              key_filename: /root/id_rsa
+              host_string: { get_attribute: [ test_floatingip, floating_ip_address ] }
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: test_vm
 
   test_network:
     type: cloudify.cloudstack.nodes.Network
