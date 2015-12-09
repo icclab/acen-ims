@@ -65,12 +65,6 @@ node_templates:
         cs_api_key: { get_input: cs_api_key }
         cs_api_secret: { get_input: cs_api_secret }
         cs_api_url: { get_input: cs_api_url }
-      firewall:
-        - type: ingress
-          protocol: TCP
-          cidr: 0.0.0.0/0
-          ports: [22]
-
     relationships:
       - type: cloudify.relationships.connected_to
         target: test_network
@@ -91,7 +85,11 @@ node_templates:
         cs_api_key: { get_input: cs_api_key }
         cs_api_secret: { get_input: cs_api_secret }
         cs_api_url: { get_input: cs_api_url }
-
+      firewall:
+        - type: ingress
+          protocol: TCP
+          cidr: 0.0.0.0/0
+          ports: [22]
     relationships:
       - type: cloudify.relationships.contained_in
         target: test_vpc
