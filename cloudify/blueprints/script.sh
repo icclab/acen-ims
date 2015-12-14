@@ -1,2 +1,2 @@
 #!/bin/bash
-touch /tmp/hello_world
+echo "$env_var" > /tmp/hello_world
