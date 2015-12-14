@@ -79,7 +79,7 @@ node_templates:
         start:
           implementation: fabric.fabric_plugin.tasks.run_script
           inputs:
-            script_path: script.sh
+            script_path: scripts/test_cloudstack_script.sh
             env_var: { get_input: key_name }
             fabric_env:
               user: ubuntu
