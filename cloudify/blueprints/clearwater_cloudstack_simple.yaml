@@ -1,0 +1,530 @@
+tosca_definitions_version: cloudify_dsl_1_0
+
+imports:
+  - http://www.getcloudify.org/spec/cloudify/3.2.1/types.yaml
+  - http://www.getcloudify.org/spec/cloudstack-plugin/1.2.1/plugin.yaml
+  - http://www.getcloudify.org/spec/fabric-plugin/1.2.1/plugin.yaml
+
+inputs:
+  cs_api_key:
+    description: 'CloudStack API key'
+  cs_api_secret:
+    description: 'CloudStack API secret'
+  cs_api_url:
+    description: 'CloudStack API URL'
+
+  image_id:
+    description: 'VM template id'
+    default: '5c63ae06-c0bb-41d6-b800-f548eeb63588'
+  size_id:
+    description: 'VM service offering name'
+    default: '2vCPU-4GB'
+  key_name:
+    description: 'SSH key name'
+    default: 'cima_key'
+
+  zone:
+    description: 'CloudStack zone'
+    default: 'swiss2'
+
+  network_offering:
+    description: 'Network offering name'
+    default: 'Offering for Isolated VPC networks - with External LoadBalancer'
+
+  dns_zone:
+    description: 'Clearwater DNS zone'
+    default: ims.com
+  dnssec_key:
+    description: 'Clearwater DNS secret key'
+    default: zPDgJ0y0AEmCP7fzCi93zfBRYRcYdDDv5xrmwyv7rLgzqSnBlT8n0o1mrHTNpety1QUK55+nBKAedcRluAW39w==
+
+node_templates:
+  sprout_vm:
+    type: cloudify.cloudstack.nodes.VirtualMachine
+    properties:
+      server:
+        image_id: { get_input: image_id }
+        size: { get_input: size_id }
+        key_name: { get_input: key_name }
+      install_agent: false
+      network:
+        default_network: { get_property: [clearwater_network, resource_id] }
+      portmaps:
+        - protocol: TCP
+          private_port: 1
+          private_end_port: 65535
+          public_port: 1
+          public_end_port: 65535
+      cloudstack_config:
+        cs_api_key: { get_input: cs_api_key }
+        cs_api_secret: { get_input: cs_api_secret }
+        cs_api_url: { get_input: cs_api_url }
+    relationships:
+      - type: cloudify.relationships.connected_to
+        target: clearwater_network
+      - type: cloudify.cloudstack.virtual_machine_connected_to_floating_ip
+        target: sprout_floatingip
+
+  homestead_vm:
+    type: cloudify.cloudstack.nodes.VirtualMachine
+    properties:
+      server:
+        image_id: { get_input: image_id }
+        size: { get_input: size_id }
+        key_name: { get_input: key_name }
+      install_agent: false
+      network:
+        default_network: { get_property: [clearwater_network, resource_id] }
+      portmaps:
+        - protocol: TCP
+          private_port: 1
+          private_end_port: 65535
+          public_port: 1
+          public_end_port: 65535
+      cloudstack_config:
+        cs_api_key: { get_input: cs_api_key }
+        cs_api_secret: { get_input: cs_api_secret }
+        cs_api_url: { get_input: cs_api_url }
+    relationships:
+      - type: cloudify.relationships.connected_to
+        target: clearwater_network
+      - type: cloudify.cloudstack.virtual_machine_connected_to_floating_ip
+        target: homestead_floatingip
+
+  homer_vm:
+    type: cloudify.cloudstack.nodes.VirtualMachine
+    properties:
+      server:
+        image_id: { get_input: image_id }
+        size: { get_input: size_id }
+        key_name: { get_input: key_name }
+      install_agent: false
+      network:
+        default_network: { get_property: [clearwater_network, resource_id] }
+      portmaps:
+        - protocol: TCP
+          private_port: 1
+          private_end_port: 65535
+          public_port: 1
+          public_end_port: 65535
+      cloudstack_config:
+        cs_api_key: { get_input: cs_api_key }
+        cs_api_secret: { get_input: cs_api_secret }
+        cs_api_url: { get_input: cs_api_url }
+    relationships:
+      - type: cloudify.relationships.connected_to
+        target: clearwater_network
+      - type: cloudify.cloudstack.virtual_machine_connected_to_floating_ip
+        target: homer_floatingip
+
+  bono_vm:
+    type: cloudify.cloudstack.nodes.VirtualMachine
+    properties:
+      server:
+        image_id: { get_input: image_id }
+        size: { get_input: size_id }
+        key_name: { get_input: key_name }
+      install_agent: false
+      network:
+        default_network: { get_property: [clearwater_network, resource_id] }
+      portmaps:
+        - protocol: TCP
+          private_port: 1
+          private_end_port: 65535
+          public_port: 1
+          public_end_port: 65535
+      cloudstack_config:
+        cs_api_key: { get_input: cs_api_key }
+        cs_api_secret: { get_input: cs_api_secret }
+        cs_api_url: { get_input: cs_api_url }
+    relationships:
+      - type: cloudify.relationships.connected_to
+        target: clearwater_network
+      - type: cloudify.cloudstack.virtual_machine_connected_to_floating_ip
+        target: bono_floatingip
+
+  homer_vm:
+    type: cloudify.cloudstack.nodes.VirtualMachine
+    properties:
+      server:
+        image_id: { get_input: image_id }
+        size: { get_input: size_id }
+        key_name: { get_input: key_name }
+      install_agent: false
+      network:
+        default_network: { get_property: [clearwater_network, resource_id] }
+      portmaps:
+        - protocol: TCP
+          private_port: 1
+          private_end_port: 65535
+          public_port: 1
+          public_end_port: 65535
+      cloudstack_config:
+        cs_api_key: { get_input: cs_api_key }
+        cs_api_secret: { get_input: cs_api_secret }
+        cs_api_url: { get_input: cs_api_url }
+    relationships:
+      - type: cloudify.relationships.connected_to
+        target: clearwater_network
+      - type: cloudify.cloudstack.virtual_machine_connected_to_floating_ip
+        target: homer_floatingip
+
+  ellis_vm:
+    type: cloudify.cloudstack.nodes.VirtualMachine
+    properties:
+      server:
+        image_id: { get_input: image_id }
+        size: { get_input: size_id }
+        key_name: { get_input: key_name }
+      install_agent: false
+      network:
+        default_network: { get_property: [clearwater_network, resource_id] }
+      portmaps:
+        - protocol: TCP
+          private_port: 1
+          private_end_port: 65535
+          public_port: 1
+          public_end_port: 65535
+      cloudstack_config:
+        cs_api_key: { get_input: cs_api_key }
+        cs_api_secret: { get_input: cs_api_secret }
+        cs_api_url: { get_input: cs_api_url }
+    relationships:
+      - type: cloudify.relationships.connected_to
+        target: clearwater_network
+      - type: cloudify.cloudstack.virtual_machine_connected_to_floating_ip
+        target: ellis_floatingip
+
+  ralf_vm:
+    type: cloudify.cloudstack.nodes.VirtualMachine
+    properties:
+      server:
+        image_id: { get_input: image_id }
+        size: { get_input: size_id }
+        key_name: { get_input: key_name }
+      install_agent: false
+      network:
+        default_network: { get_property: [clearwater_network, resource_id] }
+      portmaps:
+        - protocol: TCP
+          private_port: 1
+          private_end_port: 65535
+          public_port: 1
+          public_end_port: 65535
+      cloudstack_config:
+        cs_api_key: { get_input: cs_api_key }
+        cs_api_secret: { get_input: cs_api_secret }
+        cs_api_url: { get_input: cs_api_url }
+    relationships:
+      - type: cloudify.relationships.connected_to
+        target: clearwater_network
+      - type: cloudify.cloudstack.virtual_machine_connected_to_floating_ip
+        target: ralf_floatingip
+
+  dns_server_vm:
+    type: cloudify.cloudstack.nodes.VirtualMachine
+    properties:
+      server:
+        image_id: { get_input: image_id }
+        size: { get_input: size_id }
+        key_name: { get_input: key_name }
+      install_agent: false
+      network:
+        default_network: { get_property: [clearwater_network, resource_id] }
+      portmaps:
+        - protocol: TCP
+          private_port: 1
+          private_end_port: 65535
+          public_port: 1
+          public_end_port: 65535
+      cloudstack_config:
+        cs_api_key: { get_input: cs_api_key }
+        cs_api_secret: { get_input: cs_api_secret }
+        cs_api_url: { get_input: cs_api_url }
+    relationships:
+      - type: cloudify.relationships.connected_to
+        target: clearwater_network
+      - type: cloudify.cloudstack.virtual_machine_connected_to_floating_ip
+        target: dns_server_floatingip
+
+  sprout_application:
+    type: cloudify.nodes.ApplicationServer
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        start:
+          implementation: fabric.fabric_plugin.tasks.run_script
+          inputs:
+            script_path: scripts/clearwater-deploy-simple.sh
+            hostname: 'sprout'
+            local_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
+            public_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
+            ralf_local_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
+            homer_local_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
+            ellis_local_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
+            bono_local_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
+            sprout_local_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
+            homestead_local_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+            zone: { get_input: dns_zone }
+            dnssec_key: { get_input: dnssec_key }
+            dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            fabric_env:
+              user: root
+              key_filename: /root/id_rsa
+              host_string: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: sprout_vm
+      - type: cloudify.relationships.depends_on
+        target: dns_server_application
+
+  bono_application:
+    type: cloudify.nodes.ApplicationServer
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        start:
+          implementation: fabric.fabric_plugin.tasks.run_script
+          inputs:
+            script_path: scripts/clearwater-deploy-simple.sh
+            hostname: 'bono'
+            local_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
+            public_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
+            ralf_local_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
+            homer_local_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
+            ellis_local_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
+            bono_local_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
+            sprout_local_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
+            homestead_local_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+            zone: { get_input: dns_zone }
+            dnssec_key: { get_input: dnssec_key }
+            dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            fabric_env:
+              user: root
+              key_filename: /root/id_rsa
+              host_string: { get_attribute: [ bono_floatingip, floating_ip_address ] }
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: bono_vm
+      - type: cloudify.relationships.depends_on
+        target: dns_server_application
+
+  homestead_application:
+    type: cloudify.nodes.ApplicationServer
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        start:
+          implementation: fabric.fabric_plugin.tasks.run_script
+          inputs:
+            script_path: scripts/clearwater-deploy-simple.sh
+            hostname: 'homestead'
+            local_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+            public_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+            ralf_local_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
+            homer_local_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
+            ellis_local_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
+            bono_local_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
+            sprout_local_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
+            homestead_local_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+            zone: { get_input: dns_zone }
+            dnssec_key: { get_input: dnssec_key }
+            dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            fabric_env:
+              user: root
+              key_filename: /root/id_rsa
+              host_string: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: homestead_vm
+      - type: cloudify.relationships.depends_on
+        target: dns_server_application
+
+  homer_application:
+    type: cloudify.nodes.ApplicationServer
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        start:
+          implementation: fabric.fabric_plugin.tasks.run_script
+          inputs:
+            script_path: scripts/clearwater-deploy-simple.sh
+            hostname: 'homer'
+            local_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
+            public_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
+            ralf_local_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
+            homer_local_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
+            ellis_local_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
+            bono_local_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
+            sprout_local_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
+            homestead_local_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+            zone: { get_input: dns_zone }
+            dnssec_key: { get_input: dnssec_key }
+            dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            fabric_env:
+              user: root
+              key_filename: /root/id_rsa
+              host_string: { get_attribute: [ homer_floatingip, floating_ip_address ] }
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: homer_vm
+      - type: cloudify.relationships.depends_on
+        target: dns_server_application
+
+  ellis_application:
+    type: cloudify.nodes.ApplicationServer
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        start:
+          implementation: fabric.fabric_plugin.tasks.run_script
+          inputs:
+            script_path: scripts/clearwater-deploy-simple.sh
+            hostname: 'ellis'
+            local_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
+            public_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
+            ralf_local_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
+            homer_local_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
+            ellis_local_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
+            bono_local_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
+            sprout_local_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
+            homestead_local_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+            zone: { get_input: dns_zone }
+            dnssec_key: { get_input: dnssec_key }
+            dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            fabric_env:
+              user: root
+              key_filename: /root/id_rsa
+              host_string: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: ellis_vm
+      - type: cloudify.relationships.depends_on
+        target: dns_server_application
+
+  ralf_application:
+    type: cloudify.nodes.ApplicationServer
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        start:
+          implementation: fabric.fabric_plugin.tasks.run_script
+          inputs:
+            script_path: scripts/clearwater-deploy-simple.sh
+            hostname: 'ralf'
+            local_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
+            public_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
+            ralf_local_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
+            homer_local_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
+            ellis_local_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
+            bono_local_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
+            sprout_local_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
+            homestead_local_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+            zone: { get_input: dns_zone }
+            dnssec_key: { get_input: dnssec_key }
+            dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            fabric_env:
+              user: root
+              key_filename: /root/id_rsa
+              host_string: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: ralf_vm
+      - type: cloudify.relationships.depends_on
+        target: dns_server_application
+
+  dns_server_application:
+    type: cloudify.nodes.ApplicationServer
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        start:
+          implementation: fabric.fabric_plugin.tasks.run_script
+          inputs:
+            script_path: scripts/clearwater-dns.sh
+            zone: { get_input: dns_zone }
+            dnssec_key: { get_input: dnssec_key }
+            public_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            fabric_env:
+              user: root
+              key_filename: /root/id_rsa
+              host_string: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: dns_server_vm
+
+  clearwater_network:
+    type: cloudify.cloudstack.nodes.Network
+    properties:
+      resource_id: 'clearwater-net' 
+      network:
+        vpc: { get_property: [clearwater_vpc, resource_id] }
+        service_offering: { get_input: network_offering}
+        zone: { get_input: zone }
+        gateway: '10.5.7.1'
+        netmask: '255.255.255.0'
+      cloudstack_config:
+        cs_api_key: { get_input: cs_api_key }
+        cs_api_secret: { get_input: cs_api_secret }
+        cs_api_url: { get_input: cs_api_url }
+      firewall:
+        - type: ingress
+          protocol: TCP
+          cidr: 0.0.0.0/0
+          ports: [22]
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: clearwater_vpc
+
+  clearwater_vpc:
+    type: cloudify.cloudstack.nodes.VPC
+    properties:
+      resource_id: 'clearwater-vpc'
+      network:
+        service_offering: 'Default VPC offering'
+        zone: { get_input: zone }
+        cidr: '10.5.0.0/16'
+      cloudstack_config:
+        cs_api_key: { get_input: cs_api_key }
+        cs_api_secret: { get_input: cs_api_secret }
+        cs_api_url: { get_input: cs_api_url }
+
+  sprout_floatingip:
+    type: cloudify.cloudstack.nodes.FloatingIP
+    relationships:
+      - type: cloudify.cloudstack.floating_ip_connected_to_network
+        target: clearwater_network
+
+  bono_floatingip:
+    type: cloudify.cloudstack.nodes.FloatingIP
+    relationships:
+      - type: cloudify.cloudstack.floating_ip_connected_to_network
+        target: clearwater_network
+
+  homer_floatingip:
+    type: cloudify.cloudstack.nodes.FloatingIP
+    relationships:
+      - type: cloudify.cloudstack.floating_ip_connected_to_network
+        target: clearwater_network
+
+  homestead_floatingip:
+    type: cloudify.cloudstack.nodes.FloatingIP
+    relationships:
+      - type: cloudify.cloudstack.floating_ip_connected_to_network
+        target: clearwater_network
+
+  ralf_floatingip:
+    type: cloudify.cloudstack.nodes.FloatingIP
+    relationships:
+      - type: cloudify.cloudstack.floating_ip_connected_to_network
+        target: clearwater_network
+
+  ellis_floatingip:
+    type: cloudify.cloudstack.nodes.FloatingIP
+    relationships:
+      - type: cloudify.cloudstack.floating_ip_connected_to_network
+        target: clearwater_network
+
+  dns_server_floatingip:
+    type: cloudify.cloudstack.nodes.FloatingIP
+    relationships:
+      - type: cloudify.cloudstack.floating_ip_connected_to_network
+        target: clearwater_network
+
+outputs:
+  endpoint:
+    value:
+      ip_address: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
