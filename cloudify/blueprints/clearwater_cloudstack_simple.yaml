@@ -15,7 +15,7 @@ inputs:
 
   image_id:
     description: 'VM template id'
-    default: '5c63ae06-c0bb-41d6-b800-f548eeb63588'
+    default: '2dda9de6-fb62-45ac-8727-b0a49771a606'
   size_id:
     description: 'VM service offering name'
     default: '2vCPU-4GB'
@@ -46,6 +46,7 @@ node_templates:
         image_id: { get_input: image_id }
         size: { get_input: size_id }
         key_name: { get_input: key_name }
+        expunge: True
       install_agent: false
       network:
         default_network: { get_property: [clearwater_network, resource_id] }
@@ -72,6 +73,7 @@ node_templates:
         image_id: { get_input: image_id }
         size: { get_input: size_id }
         key_name: { get_input: key_name }
+        expunge: True
       install_agent: false
       network:
         default_network: { get_property: [clearwater_network, resource_id] }
@@ -98,6 +100,7 @@ node_templates:
         image_id: { get_input: image_id }
         size: { get_input: size_id }
         key_name: { get_input: key_name }
+        expunge: True
       install_agent: false
       network:
         default_network: { get_property: [clearwater_network, resource_id] }
@@ -124,6 +127,7 @@ node_templates:
         image_id: { get_input: image_id }
         size: { get_input: size_id }
         key_name: { get_input: key_name }
+        expunge: True
       install_agent: false
       network:
         default_network: { get_property: [clearwater_network, resource_id] }
@@ -150,6 +154,7 @@ node_templates:
         image_id: { get_input: image_id }
         size: { get_input: size_id }
         key_name: { get_input: key_name }
+        expunge: True
       install_agent: false
       network:
         default_network: { get_property: [clearwater_network, resource_id] }
@@ -176,6 +181,7 @@ node_templates:
         image_id: { get_input: image_id }
         size: { get_input: size_id }
         key_name: { get_input: key_name }
+        expunge: True
       install_agent: false
       network:
         default_network: { get_property: [clearwater_network, resource_id] }
@@ -202,6 +208,7 @@ node_templates:
         image_id: { get_input: image_id }
         size: { get_input: size_id }
         key_name: { get_input: key_name }
+        expunge: True
       install_agent: false
       network:
         default_network: { get_property: [clearwater_network, resource_id] }
@@ -228,6 +235,7 @@ node_templates:
         image_id: { get_input: image_id }
         size: { get_input: size_id }
         key_name: { get_input: key_name }
+        expunge: True
       install_agent: false
       network:
         default_network: { get_property: [clearwater_network, resource_id] }
@@ -256,14 +264,14 @@ node_templates:
           inputs:
             script_path: scripts/clearwater-deploy-simple.sh
             hostname: 'sprout'
-            local_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
+            local_ip: { get_attribute: [ sprout_vm, ip ] }
             public_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
-            ralf_local_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
-            homer_local_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
-            ellis_local_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
-            bono_local_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
-            sprout_local_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
-            homestead_local_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+            ralf_local_ip: { get_attribute: [ ralf_vm, ip ] }
+            homer_local_ip: { get_attribute: [ homer_vm, ip ] }
+            ellis_local_ip: { get_attribute: [ ellis_vm, ip ] }
+            bono_local_ip: { get_attribute: [ bono_vm, ip ] }
+            sprout_local_ip: { get_attribute: [ sprout_vm, ip ] }
+            homestead_local_ip: { get_attribute: [ homestead_vm, ip ] }
             zone: { get_input: dns_zone }
             dnssec_key: { get_input: dnssec_key }
             dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
@@ -286,14 +294,14 @@ node_templates:
           inputs:
             script_path: scripts/clearwater-deploy-simple.sh
             hostname: 'bono'
-            local_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
+            local_ip: { get_attribute: [ bono_vm, ip ] }
             public_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
-            ralf_local_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
-            homer_local_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
-            ellis_local_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
-            bono_local_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
-            sprout_local_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
-            homestead_local_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+            ralf_local_ip: { get_attribute: [ ralf_vm, ip ] }
+            homer_local_ip: { get_attribute: [ homer_vm, ip ] }
+            ellis_local_ip: { get_attribute: [ ellis_vm, ip ] }
+            bono_local_ip: { get_attribute: [ bono_vm, ip ] }
+            sprout_local_ip: { get_attribute: [ sprout_vm, ip ] }
+            homestead_local_ip: { get_attribute: [ homestead_vm, ip ] }
             zone: { get_input: dns_zone }
             dnssec_key: { get_input: dnssec_key }
             dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
@@ -316,14 +324,14 @@ node_templates:
           inputs:
             script_path: scripts/clearwater-deploy-simple.sh
             hostname: 'homestead'
-            local_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+            local_ip: { get_attribute: [ homestead_vm, ip ] }
             public_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
-            ralf_local_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
-            homer_local_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
-            ellis_local_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
-            bono_local_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
-            sprout_local_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
-            homestead_local_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+            ralf_local_ip: { get_attribute: [ ralf_vm, ip ] }
+            homer_local_ip: { get_attribute: [ homer_vm, ip ] }
+            ellis_local_ip: { get_attribute: [ ellis_vm, ip ] }
+            bono_local_ip: { get_attribute: [ bono_vm, ip ] }
+            sprout_local_ip: { get_attribute: [ sprout_vm, ip ] }
+            homestead_local_ip: { get_attribute: [ homestead_vm, ip ] }
             zone: { get_input: dns_zone }
             dnssec_key: { get_input: dnssec_key }
             dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
@@ -346,14 +354,14 @@ node_templates:
           inputs:
             script_path: scripts/clearwater-deploy-simple.sh
             hostname: 'homer'
-            local_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
+            local_ip: { get_attribute: [ homer_vm, ip ] }
             public_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
-            ralf_local_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
-            homer_local_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
-            ellis_local_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
-            bono_local_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
-            sprout_local_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
-            homestead_local_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+            ralf_local_ip: { get_attribute: [ ralf_vm, ip ] }
+            homer_local_ip: { get_attribute: [ homer_vm, ip ] }
+            ellis_local_ip: { get_attribute: [ ellis_vm, ip ] }
+            bono_local_ip: { get_attribute: [ bono_vm, ip ] }
+            sprout_local_ip: { get_attribute: [ sprout_vm, ip ] }
+            homestead_local_ip: { get_attribute: [ homestead_vm, ip ] }
             zone: { get_input: dns_zone }
             dnssec_key: { get_input: dnssec_key }
             dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
@@ -376,14 +384,14 @@ node_templates:
           inputs:
             script_path: scripts/clearwater-deploy-simple.sh
             hostname: 'ellis'
-            local_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
+            local_ip: { get_attribute: [ ellis_vm, ip ] }
             public_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
-            ralf_local_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
-            homer_local_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
-            ellis_local_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
-            bono_local_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
-            sprout_local_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
-            homestead_local_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+            ralf_local_ip: { get_attribute: [ ralf_vm, ip ] }
+            homer_local_ip: { get_attribute: [ homer_vm, ip ] }
+            ellis_local_ip: { get_attribute: [ ellis_vm, ip ] }
+            bono_local_ip: { get_attribute: [ bono_vm, ip ] }
+            sprout_local_ip: { get_attribute: [ sprout_vm, ip ] }
+            homestead_local_ip: { get_attribute: [ homestead_vm, ip ] }
             zone: { get_input: dns_zone }
             dnssec_key: { get_input: dnssec_key }
             dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
@@ -406,14 +414,14 @@ node_templates:
           inputs:
             script_path: scripts/clearwater-deploy-simple.sh
             hostname: 'ralf'
-            local_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
+            local_ip: { get_attribute: [ ralf_vm, ip ] }
             public_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
-            ralf_local_ip: { get_attribute: [ ralf_floatingip, floating_ip_address ] }
-            homer_local_ip: { get_attribute: [ homer_floatingip, floating_ip_address ] }
-            ellis_local_ip: { get_attribute: [ ellis_floatingip, floating_ip_address ] }
-            bono_local_ip: { get_attribute: [ bono_floatingip, floating_ip_address ] }
-            sprout_local_ip: { get_attribute: [ sprout_floatingip, floating_ip_address ] }
-            homestead_local_ip: { get_attribute: [ homestead_floatingip, floating_ip_address ] }
+            ralf_local_ip: { get_attribute: [ ralf_vm, ip ] }
+            homer_local_ip: { get_attribute: [ homer_vm, ip ] }
+            ellis_local_ip: { get_attribute: [ ellis_vm, ip ] }
+            bono_local_ip: { get_attribute: [ bono_vm, ip ] }
+            sprout_local_ip: { get_attribute: [ sprout_vm, ip ] }
+            homestead_local_ip: { get_attribute: [ homestead_vm, ip ] }
             zone: { get_input: dns_zone }
             dnssec_key: { get_input: dnssec_key }
             dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
@@ -449,7 +457,7 @@ node_templates:
   clearwater_network:
     type: cloudify.cloudstack.nodes.Network
     properties:
-      resource_id: 'clearwater-net' 
+      resource_id: 'clearwater_net'
       network:
         vpc: { get_property: [clearwater_vpc, resource_id] }
         service_offering: { get_input: network_offering}
@@ -464,7 +472,11 @@ node_templates:
         - type: ingress
           protocol: TCP
           cidr: 0.0.0.0/0
-          ports: [22]
+          ports: [22, 2812, 2380, 4000, 80, 443, 3478, 5060, 5062, 5058, 5054, 5052, 11211, 7253, 7000, 9160, 9888, 8888, 8889, 7888, 10888, 53]
+        - type: ingress
+          protocol: UDP
+          cidr: 0.0.0.0/0
+          ports: [161, 162, 3478, 53]
     relationships:
       - type: cloudify.relationships.contained_in
         target: clearwater_vpc
