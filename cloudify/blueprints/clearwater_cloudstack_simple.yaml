@@ -2,6 +2,8 @@ tosca_definitions_version: cloudify_dsl_1_0
 
 imports:
   - http://www.getcloudify.org/spec/cloudify/3.2.1/types.yaml
+  # Requires forewall port range specification
+  # https://github.com/cloudify-cosmo/cloudify-cloudstack-plugin/pull/17
   - http://www.getcloudify.org/spec/cloudstack-plugin/1.2.1/plugin.yaml
   - http://www.getcloudify.org/spec/fabric-plugin/1.2.1/plugin.yaml
 
@@ -274,7 +276,8 @@ node_templates:
             homestead_local_ip: { get_attribute: [ homestead_vm, ip ] }
             zone: { get_input: dns_zone }
             dnssec_key: { get_input: dnssec_key }
-            dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            #dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            dns_ip: { get_attribute: [ dns_server_vm, ip ] }
             fabric_env:
               user: root
               key_filename: /root/id_rsa
@@ -304,7 +307,8 @@ node_templates:
             homestead_local_ip: { get_attribute: [ homestead_vm, ip ] }
             zone: { get_input: dns_zone }
             dnssec_key: { get_input: dnssec_key }
-            dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            #dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            dns_ip: { get_attribute: [ dns_server_vm, ip ] }
             fabric_env:
               user: root
               key_filename: /root/id_rsa
@@ -334,7 +338,8 @@ node_templates:
             homestead_local_ip: { get_attribute: [ homestead_vm, ip ] }
             zone: { get_input: dns_zone }
             dnssec_key: { get_input: dnssec_key }
-            dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            #dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            dns_ip: { get_attribute: [ dns_server_vm, ip ] }
             fabric_env:
               user: root
               key_filename: /root/id_rsa
@@ -364,7 +369,8 @@ node_templates:
             homestead_local_ip: { get_attribute: [ homestead_vm, ip ] }
             zone: { get_input: dns_zone }
             dnssec_key: { get_input: dnssec_key }
-            dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            #dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            dns_ip: { get_attribute: [ dns_server_vm, ip ] }
             fabric_env:
               user: root
               key_filename: /root/id_rsa
@@ -394,7 +400,8 @@ node_templates:
             homestead_local_ip: { get_attribute: [ homestead_vm, ip ] }
             zone: { get_input: dns_zone }
             dnssec_key: { get_input: dnssec_key }
-            dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            #dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            dns_ip: { get_attribute: [ dns_server_vm, ip ] }
             fabric_env:
               user: root
               key_filename: /root/id_rsa
@@ -424,7 +431,8 @@ node_templates:
             homestead_local_ip: { get_attribute: [ homestead_vm, ip ] }
             zone: { get_input: dns_zone }
             dnssec_key: { get_input: dnssec_key }
-            dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            #dns_ip: { get_attribute: [ dns_server_floatingip, floating_ip_address ] }
+            dns_ip: { get_attribute: [ dns_server_vm, ip ] }
             fabric_env:
               user: root
               key_filename: /root/id_rsa
@@ -476,7 +484,7 @@ node_templates:
         - type: ingress
           protocol: UDP
           cidr: 0.0.0.0/0
-          ports: [161, 162, 3478, 53]
+          ports: [161, 162, 3478, 53, '32768:65535']
     relationships:
       - type: cloudify.relationships.contained_in
         target: clearwater_vpc
