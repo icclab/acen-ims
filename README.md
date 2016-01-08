@@ -75,3 +75,6 @@ Tested with Cloudify 3.2.1 and [modified Cloudify CloudStack plugin 1.2.1](https
 local init --install-plugins -p test_cloudstack.yaml
 cfy local execute -w install
 ```
+
+## Acknowledgment
+This work was made possible by the [KTI ACEN project](http://blog.zhaw.ch/icclab/acen-begins/) in collaboration with [Citrix](https://www.citrix.com/) and [Exoscale](https://www.exoscale.ch/).
