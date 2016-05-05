@@ -1,0 +1,380 @@
+heat_template_version: 2013-05-23
+
+description: 'Simple template to deploy Project Clearwater infrastructure on CloudStack based on http://clearwater.readthedocs.org/en/release-65/Manual_Install/'
+
+parameters:
+  api_endpoint:
+    type: string
+    description: Cloudstack API endpoint
+
+  api_key:
+    type: string
+    description: API key
+
+  api_secret:
+    type: string
+    description: API secret key
+
+  service_offering_id:
+    type: string
+    description: CloudStack service offering ID
+    default: '2b7cadf0-8a7a-4969-a009-9e7a1ad088a4'
+
+  template_id:
+    type: string
+    description: CloudStack template ID
+    default: 165304e3-e75e-428d-8652-00a120cbb90c
+
+  zone_id:
+    type: string
+    description: CloudStack zone ID
+    default: '9e165259-d754-4704-9813-f235c4f613f7'
+
+  network_offering_id:
+    type: string
+    description: CloudStack network offering ID
+    default: '5465ab42-a551-4ec3-b994-ebb3cc6321cc'
+
+  gateway:
+    type: string
+    description: Clearwater network gateway
+    default: '10.0.0.1'
+
+  netmask:
+    type: string
+    description: Clearwater network netmask
+    default: '255.255.255.0'
+
+  vpc_id:
+    type: string
+    description: CloudStack VPC ID
+    default: '6749b3e0-9c39-4185-adfa-8ba6396b6e51'
+
+  acl_id:
+    type: string
+    description: ACL to be used for the Clearwater network
+    default: 'ab06abac-0719-11e5-ba7e-5254009abd48'
+
+  dns_zone:
+    type: string
+    description: Clearwater DNS zone
+    default: 'ims.com'
+
+  dnssec_key:
+    type: string
+    description: DNS secret key
+    default: 'zPDgJ0y0AEmCP7fzCi93zfBRYRcYdDDv5xrmwyv7rLgzqSnBlT8n0o1mrHTNpety1QUK55+nBKAedcRluAW39w=='
+
+  public_ssh_key:
+    type: string
+    description: Public SSH key
+    default: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoAv8WGeqtGket7cSai5zkYbOkh9a3FFH5yKQWHaxdGZfs9RU7CNbJJ39on4/+RoeffF3YK54EjYW4LtANFGzB8jwQuArO+3H1vLwxSkDTeHgBNfV2daGN00/9BmO1mBvVK3Re76rimvjH8Rm7y0Jc39RTZgeiNF0DL4uWOl2S0nVu2qyYZ7WIWNjPfknYeVUPNJUiEONBNfF7KPdrsGsUlyhQm0/O0+R3g4hU6PeAtOPTVUR43Z1mmrfW8oVp2i/0k3I9ld78suBe7De8IpwhDs/rrB7BNLQ34eA2Sgl/Xcjlkj7+XfiYIJ5Iv7KJcqJlhhnVQmBZ7G8kr46VfNvB vojtechcima@Vojtechs-MacBook-Pro.local'
+
+  script:
+    type: string
+    description: Init script
+
+resources:
+  clearwater_network:
+    type: Cloudstack::Network::Network
+    properties: 
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: clearwater-network
+      display_text: clearwater_network
+      network_offering_id: { get_param: network_offering_id }
+      zone_id: { get_param: zone_id }
+      gateway: { get_param: gateway }
+      netmask: { get_param: netmask }
+      vpc_id: { get_param: vpc_id }
+      acl_id: { get_param: acl_id }
+
+  ralf:
+    type: Cloudstack::Compute::VirtualMachine
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: clearwater-ralf
+      template_id: { get_param: template_id }
+      service_offering_id: { get_param: service_offering_id }
+      network_ids: [ { get_attr: [ clearwater_network, id ] } ]
+      zone_id: { get_param: zone_id }
+      user_data:
+        str_replace:
+          template: { get_param: script }
+          params:
+            $public_ssh_key: { get_param: public_ssh_key }
+
+  ralf_floating_ip:
+    type: Cloudstack::Network::Address
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      vpc_id: { get_param: vpc_id }
+
+  ralf_nat:
+    type: Cloudstack::Network::StaticNAT
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      ip_address_id: { get_attr: [ ralf_floating_ip, id ] }
+      virtual_machine_id: { get_attr: [ ralf, id ] }
+      network_id: { get_attr: [ clearwater_network, id ] }
+
+  homer:
+    type: Cloudstack::Compute::VirtualMachine
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: clearwater-homer
+      template_id: { get_param: template_id }
+      service_offering_id: { get_param: service_offering_id }
+      network_ids: [ { get_attr: [ clearwater_network, id ] } ]
+      zone_id: { get_param: zone_id }
+      user_data:
+        str_replace:
+          template: { get_param: script }
+          params:
+            $public_ssh_key: { get_param: public_ssh_key }
+
+  homer_floating_ip:
+    type: Cloudstack::Network::Address
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      vpc_id: { get_param: vpc_id }
+ 
+  homer_nat:
+    type: Cloudstack::Network::StaticNAT
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      ip_address_id: { get_attr: [ homer_floating_ip, id ] }
+      virtual_machine_id: { get_attr: [ homer, id ] }
+      network_id: { get_attr: [ clearwater_network, id ] }
+
+  ellis:
+    type: Cloudstack::Compute::VirtualMachine
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: clearwater-ellis
+      template_id: { get_param: template_id }
+      service_offering_id: { get_param: service_offering_id }
+      network_ids: [ { get_attr: [ clearwater_network, id ] } ]
+      zone_id: { get_param: zone_id }
+      user_data:
+        str_replace:
+          template: { get_param: script }
+          params:
+            $public_ssh_key: { get_param: public_ssh_key }
+
+  ellis_floating_ip:
+    type: Cloudstack::Network::Address
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      vpc_id: { get_param: vpc_id }
+
+  ellis_nat:
+    type: Cloudstack::Network::StaticNAT
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      ip_address_id: { get_attr: [ ellis_floating_ip, id ] }
+      virtual_machine_id: { get_attr: [ ellis, id ] }
+      network_id: { get_attr: [ clearwater_network, id ] }
+
+  bono:
+    type: Cloudstack::Compute::VirtualMachine
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: clearwater-bono
+      template_id: { get_param: template_id }
+      service_offering_id: { get_param: service_offering_id }
+      network_ids: [ { get_attr: [ clearwater_network, id ] } ]
+      zone_id: { get_param: zone_id }
+      user_data:
+        str_replace:
+          template: { get_param: script }
+          params:
+            $public_ssh_key: { get_param: public_ssh_key }
+
+  bono_floating_ip:
+    type: Cloudstack::Network::Address
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      vpc_id: { get_param: vpc_id }
+ 
+  bono_nat:
+    type: Cloudstack::Network::StaticNAT
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      ip_address_id: { get_attr: [ bono_floating_ip, id ] }
+      virtual_machine_id: { get_attr: [ bono, id ] }
+      network_id: { get_attr: [ clearwater_network, id ] }
+
+  sprout:
+    type: Cloudstack::Compute::VirtualMachine
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: clearwater-sprout
+      template_id: { get_param: template_id }
+      service_offering_id: { get_param: service_offering_id }
+      network_ids: [ { get_attr: [ clearwater_network, id ] } ]
+      zone_id: { get_param: zone_id }
+      user_data:
+        str_replace:
+          template: { get_param: script }
+          params:
+            $public_ssh_key: { get_param: public_ssh_key }
+
+  sprout_floating_ip:
+    type: Cloudstack::Network::Address
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      vpc_id: { get_param: vpc_id }
+ 
+  sprout_nat:
+    type: Cloudstack::Network::StaticNAT
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      ip_address_id: { get_attr: [ sprout_floating_ip, id ] }
+      virtual_machine_id: { get_attr: [ sprout, id ] }
+      network_id: { get_attr: [ clearwater_network, id ] }
+
+  homestead:
+    type: Cloudstack::Compute::VirtualMachine
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: clearwater-homestead
+      template_id: { get_param: template_id }
+      service_offering_id: { get_param: service_offering_id }
+      network_ids: [ { get_attr: [ clearwater_network, id ] } ]
+      zone_id: { get_param: zone_id }
+      user_data:
+        str_replace:
+          template: { get_param: script }
+          params:
+            $public_ssh_key: { get_param: public_ssh_key }
+
+  homestead_floating_ip:
+    type: Cloudstack::Network::Address
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      vpc_id: { get_param: vpc_id }
+
+  homestead_nat:
+    type: Cloudstack::Network::StaticNAT
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      ip_address_id: { get_attr: [ homestead_floating_ip, id ] }
+      virtual_machine_id: { get_attr: [ homestead, id ] }
+      network_id: { get_attr: [ clearwater_network, id ] }
+
+  dns_server:
+    type: Cloudstack::Compute::VirtualMachine
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: clearwater-dns
+      template_id: { get_param: template_id }
+      service_offering_id: { get_param: service_offering_id }
+      network_ids: [ { get_attr: [ clearwater_network, id ] } ]
+      zone_id: { get_param: zone_id }
+      user_data:
+        str_replace:
+          template: { get_param: script }
+          params:
+            $public_ssh_key: { get_param: public_ssh_key }
+
+  dns_floating_ip:
+    type: Cloudstack::Network::Address
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      vpc_id: { get_param: vpc_id }
+
+  dns_nat:
+    type: Cloudstack::Network::StaticNAT
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      ip_address_id: { get_attr: [ dns_floating_ip, id ] }
+      virtual_machine_id: { get_attr: [ dns_server, id ] }
+      network_id: { get_attr: [ clearwater_network, id ] }
+
+outputs:
+  ralf_external_ip:
+    description: Instance external IP address
+    value: { get_attr: [ ralf_floating_ip, ipaddress ] }
+  ralf_private_ip:
+    description: Instance internal IP address
+    value: { get_attr: [ ralf, network_ip ] }
+  ellis_external_ip:
+    description: Instance external IP address
+    value: { get_attr: [ ellis_floating_ip, ipaddress ] }
+  ellis_private_ip:
+    description: Instance internal IP address
+    value: { get_attr: [ ellis, network_ip ] }
+  homer_external_ip:
+    description: Instance external IP address
+    value: { get_attr: [ homer_floating_ip, ipaddress ] }
+  homer_private_ip:
+    description: Instance internal IP address
+    value: { get_attr: [ homer, network_ip ] }
+  sprout_external_ip:
+    description: Instance external IP address
+    value: { get_attr: [ sprout_floating_ip, ipaddress ] }
+  sprout_private_ip:
+    description: Instance internal IP address
+    value: { get_attr: [ sprout, network_ip] }
+  homestead_external_ip:
+    description: Instance external IP address
+    value: { get_attr: [ homestead_floating_ip, ipaddress ] }
+  homestead_private_ip:
+    description: Instance internal IP address
+    value: { get_attr: [ homestead, network_ip ] }
+  bono_external_ip:
+    description: Instance external IP address
+    value: { get_attr: [ bono_floating_ip, ipaddress ] }
+  bono_private_ip:
+    description: Instance internal IP address
+    value: { get_attr: [ bono, network_ip ] }
+  dns_external_ip:
+    description: Instance external IP address
+    value: { get_attr: [ dns_floating_ip, ipaddress ] }
+  dns_private_ip:
+    description: Instance internal IP address
+    value: { get_attr: [ dns_server, network_ip ] }
