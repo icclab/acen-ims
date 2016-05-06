@@ -31,10 +31,17 @@ class SOE(service_orchestrator.Execution):
         super(SOE, self).__init__(token, tenant)
         self.uuid = uuid.uuid4()
         self.stack_id = None
+        cp = os.path.dirname(os.path.abspath(__file__))
+        self.script_dir = os.path.abspath(os.path.join(cp, '../data/scripts/'))
+        self.HOT_dir = os.path.abspath(os.path.join(cp, '../data/'))
+        self.host_ips = None
 
         # TODO parse input params here
         self.platform = 'cs'
         self.region = 'CloudStack'
+
+        self.dns_zone = 'example.com'
+        self.dns_key = 'zPDgJ0y0AEmCP7fzCi93zfBRYRcYdDDv5xrmwyv7rLgzqSnBlT8n0o1mrHTNpety1QUK55+nBKAedcRluAW39w=='
 
         self.deployer = util.get_deployer(
             token, url_type='public', tenant_name=tenant,
@@ -43,6 +50,11 @@ class SOE(service_orchestrator.Execution):
         # Generate management SSH key pair
         self.keypair = Crypto.PublicKey.RSA.generate(2048, os.urandom)
         self.pem_path = '/tmp/%s.PEM' % str(self.uuid)
+
+    def _read_file(self, filepath):
+        with open(filepath, 'r') as f:
+            file = f.read()
+        return file
 
     def _save_file(self, filepath, data):
         with open(filepath, 'w') as f:
@@ -70,10 +82,8 @@ class SOE(service_orchestrator.Execution):
         offerings, management ssh & CloudStack APIs keys, etc.
         """
         LOG.info('Deploying...')
-        cp = os.path.dirname(os.path.abspath(__file__))
-        HOT_dir = os.path.abspath(os.path.join(cp, '../data/'))
         HOT_path = os.path.join(
-            HOT_dir, str(self.platform) + '-clearwater-keys.yaml')
+            self.HOT_dir, str(self.platform) + '-clearwater-keys.yaml')
 
         LOG.info('HOT path: %s' % HOT_path)
 
@@ -83,7 +93,7 @@ class SOE(service_orchestrator.Execution):
         if self.stack_id is None:
             with open(HOT_path, 'r') as f:
                 template = f.read()
-            script_path = os.path.join(HOT_dir, 'scripts/inject-key.sh')
+            script_path = os.path.join(self.script_dir, 'inject-key.sh')
             with open(script_path, 'r') as f:
                 script = f.read()
             params['script'] = script
@@ -96,25 +106,79 @@ class SOE(service_orchestrator.Execution):
         Run scripts.
         """
         LOG.info('Calling provision...')
+        stack_outputs =\
+            self.deployer.details(self.stack_id, self.token)['output']
 
-        # TODO get components IPs here
-        # self.deployer.details(self.stack_id, self.token)
-        # LOG.info('Server IP address: %s' % vpn_server_external_ip)
+        # Store host IPs in a dictionary (host_ips),
+        # where key = $(HOST_NAME)_{external, private}_ip
+        # e.g. ralf public ip => host_ips['ralf_external_ip']
+        # e.g. dns private ip => host_ips['dns_private_ip']
+        self.host_ips = {}
+        for o in stack_outputs:
+            self.host_ips[o['output_key']] = o['output_value']
+        LOG.info('Host IPs: %s' % self.host_ips)
 
-        # Use fabric to configure endpoints
         # Create temporary PEM file
         self._save_file(self.pem_path, self._get_private_key())
-        # TODO run scripts here
-        # TODO provision ClearWater components
-        # self._run_script()
+
+        # Provision DNS
+        self._provision_dns()
+
+        # Provision ClearWater components
+        self._provision_cw_comp('homer')
+        self._provision_cw_comp('homestead')
+        self._provision_cw_comp('sprout')
+        self._provision_cw_comp('bono')
+        self._provision_cw_comp('ellis')
+        self._provision_cw_comp('ralf')
+
         self._delete_file(self.pem_path)
 
-    def _run_script(self, script_path, host):
+    def _provision_dns(self):
+        hostname = 'dns'
+        ext_ip = self.host_ips['%s_external_ip' % hostname]
+        script_path = os.path.join(self.script_dir, ('%s.sh' % hostname))
+        script = self._read_file(script_path)
+        # Parametrize script
+        script = script.replace('$zone', self.dns_zone)
+        script = script.replace('$dnssec_key', self.dns_key)
+        script = script.replace('$public_ip', ext_ip)
+        self._run_script(script, ext_ip)
+
+    def _provision_cw_comp(self, name):
+        hostname = name
+        ext_ip = self.host_ips['%s_external_ip' % hostname]
+        local_ip = self.host_ips['%s_private_ip' % hostname]
+        script_path = os.path.join(self.script_dir, 'provision_all.sh')
+        script = self._read_file(script_path)
+        # Parametrize script
+        script = script.replace('$hostname', hostname)
+        script = script.replace('$local_ip', local_ip)
+        script = script.replace('$public_ip', ext_ip)
+        script = script.replace('$homer_local_ip',
+                                self.host_ips['homer_private_ip'])
+        script = script.replace('$ellis_local_ip',
+                                self.host_ips['ellis_private_ip'])
+        script = script.replace('$sprout_local_ip',
+                                self.host_ips['sprout_private_ip'])
+        script = script.replace('$bono_local_ip',
+                                self.host_ips['bono_private_ip'])
+        script = script.replace('$homestead_local_ip',
+                                self.host_ips['homestead_private_ip'])
+        script = script.replace('$ralf_local_ip',
+                                self.host_ips['ralf_private_ip'])
+        script = script.replace('$dns_ip',
+                                self.host_ips['dns_external_ip'])
+        script = script.replace('$zone', self.dns_zone)
+        script = script.replace('$dnssec_key', self.dns_key)
+        self._run_script(script, ext_ip)
+
+    def _run_script(self, script, host):
+        # Use fabric to provision host
         with settings(host_string=host,
                       user='ubuntu',
                       key_filename=self.pem_path):
-            with open(script_path, 'r') as f:
-                sudo(f.read())
+                sudo(script)
 
     def dispose(self):
         """
