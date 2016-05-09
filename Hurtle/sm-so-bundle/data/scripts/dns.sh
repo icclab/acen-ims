@@ -49,12 +49,15 @@ EOF
 
 # Create basic zone config
 cat <<EOF > /var/lib/bind/db.$zone
-\$ORIGIN $zone.
-\$TTL 1h
-@ IN SOA ns admin\@$zone. ( $(date +%Y%m%d%H) 1d 2h 1w 30s )
+__DOLLAR_SIGN__ORIGIN $zone.
+__DOLLAR_SIGN__TTL 1h
+@ IN SOA ns admin@$zone. ( $(date +%Y%m%d%H) 1d 2h 1w 30s )
 @ NS ns
 ns A $public_ip
 EOF
+
+sed -i.bckp s/__DOLLAR_SIGN__/\$/g /var/lib/bind/db.$zone
+
 chown root:bind /var/lib/bind/db.$zone
 
 service bind9 reload
