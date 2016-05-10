@@ -15,7 +15,6 @@
 #   $hostname: 'ralf'
 #   $public_ssh_key:
 
-
 # Redirects output
 exec > >(tee -a /var/log/clearwater-heat.log) 2>&1
 
@@ -172,10 +171,14 @@ retries=0
 while ! { nsupdate -y "$zone:$dnssec_key" -v << EOF
 server $dns_ip
 update add $hostname.$zone. 30 A $public_ip
+update add scscf.$hostname.$zone. 30 A $public_ip
+update add icscf.$hostname.$zone. 30 A $public_ip
 update add $hostname.$zone. 30 NAPTR 0 0 "s" "SIP+D2T" "" _sip._tcp.$hostname.$zone.
 update add _sip._tcp.$hostname.$zone. 30 SRV 0 0 5054 $hostname.$zone.
 update add icscf.$hostname.$zone. 30 NAPTR 0 0 "s" "SIP+D2T" "" _sip._tcp.icscf.$hostname.$zone.
 update add _sip._tcp.icscf.$hostname.$zone. 30 SRV 0 0 5052 $hostname.$zone.
+update add scscf.$hostname.$zone. 30 NAPTR 0 0 "s" "SIP+D2T" "" _sip._tcp.scscf.$hostname.$zone.
+update add _sip._tcp.scscf.$hostname.$zone. 30 SRV 0 0 5054 $hostname.$zone.
 send
 EOF
 } && [ $retries -lt 10 ]

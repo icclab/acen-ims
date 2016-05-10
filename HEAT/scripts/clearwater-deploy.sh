@@ -27,7 +27,7 @@ echo $public_ssh_key >> /root/.ssh/authorized_keys
 # Add Project Clearwater repo and update repo list
 mkdir -p /etc/apt/sources.list.d/
 touch /etc/apt/sources.list.d/clearwater.list
-echo "deb http://repo.cw-ngv.com/stable binary/" > /etc/apt/sources.list.d/clearwater.list
+echo "deb http://repo.cw-ngv.com/latest binary/" > /etc/apt/sources.list.d/clearwater.list
 curl -L http://repo.cw-ngv.com/repo_key | sudo apt-key add -
 apt-get update
 
@@ -179,10 +179,14 @@ retries=0
 while ! { nsupdate -y "$zone:$dnssec_key" -v << EOF
 server $dns_ip
 update add $hostname.$zone. 30 A $public_ip
+update add scscf.$hostname.$zone. 30 A $public_ip
+update add icscf.$hostname.$zone. 30 A $public_ip
 update add $hostname.$zone. 30 NAPTR 0 0 "s" "SIP+D2T" "" _sip._tcp.$hostname.$zone.
 update add _sip._tcp.$hostname.$zone. 30 SRV 0 0 5054 $hostname.$zone.
 update add icscf.$hostname.$zone. 30 NAPTR 0 0 "s" "SIP+D2T" "" _sip._tcp.icscf.$hostname.$zone.
 update add _sip._tcp.icscf.$hostname.$zone. 30 SRV 0 0 5052 $hostname.$zone.
+update add scscf.$hostname.$zone. 30 NAPTR 0 0 "s" "SIP+D2T" "" _sip._tcp.scscf.$hostname.$zone.
+update add _sip._tcp.scscf.$hostname.$zone. 30 SRV 0 0 5054 $hostname.$zone.
 send
 EOF
 } && [ $retries -lt 10 ]
