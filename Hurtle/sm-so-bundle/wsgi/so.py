@@ -42,6 +42,7 @@ class SOE(service_orchestrator.Execution):
 
         self.dns_zone = 'example.com'
         self.dns_key = 'zPDgJ0y0AEmCP7fzCi93zfBRYRcYdDDv5xrmwyv7rLgzqSnBlT8n0o1mrHTNpety1QUK55+nBKAedcRluAW39w=='
+        self.signup_key = 'mvPC5Zza'
 
         self.deployer = util.get_deployer(
             token, url_type='public', tenant_name=tenant,
@@ -171,6 +172,7 @@ class SOE(service_orchestrator.Execution):
                                 self.host_ips['dns_external_ip'])
         script = script.replace('$zone', self.dns_zone)
         script = script.replace('$dnssec_key', self.dns_key)
+        script = script.replace('$signup_key', self.signup_key)
         self._run_script(script, ext_ip)
 
     def _run_script(self, script, host):

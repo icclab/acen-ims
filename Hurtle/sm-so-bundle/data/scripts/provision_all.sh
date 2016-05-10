@@ -13,6 +13,7 @@
 #   $dnssec_key: { get_param: dnssec_key }
 #   $dns_ip: { get_attr: [dns_floating_ip, floating_ip_address] }
 #   $hostname: 'ralf'
+#   $signup_key: 'mvPC5Zza'
 
 # Add Project Clearwater repo and update repo list
 mkdir -p /etc/apt/sources.list.d/
@@ -58,10 +59,10 @@ smtp_password=password
 email_recovery_sender=clearwater@$zone
 
 # Keys
-signup_key=mvPC5Zza
-turn_workaround=mvPC5Zza
-ellis_api_key=mvPC5Zza
-ellis_cookie_key=mvPC5Zza
+signup_key=$signup_key
+turn_workaround=$signup_key
+ellis_api_key=$signup_key
+ellis_cookie_key=$signup_key
 EOF
 
 # Chronos config
