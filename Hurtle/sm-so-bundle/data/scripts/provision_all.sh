@@ -93,6 +93,8 @@ case $hostname in
   ellis)
     DEBIAN_FRONTEND=noninteractive apt-get install ellis --yes --force-yes -o DPkg::options::=--force-confnew
     DEBIAN_FRONTEND=noninteractive apt-get install clearwater-config-manager --yes --force-yes
+    sed -i 's/# server_names_hash_bucket_size 64;/server_names_hash_bucket_size 64;/g' /etc/nginx/nginx.conf
+    service nginx restart
     ;;
   homer)
     DEBIAN_FRONTEND=noninteractive apt-get install clearwater-cassandra --yes --force-yes -o DPkg::options::=--force-confnew
@@ -163,6 +165,7 @@ while ! { nsupdate -y "$zone:$dnssec_key" -v << EOF
 server $dns_ip
 update add $hostname.$zone. 30 A $public_ip
 update add scscf.$hostname.$zone. 30 A $public_ip
+update add icscf.$hostname.$zone. 30 A $public_ip
 update add $hostname.$zone. 30 NAPTR 0 0 "s" "SIP+D2T" "" _sip._tcp.$hostname.$zone.
 update add _sip._tcp.$hostname.$zone. 30 SRV 0 0 5054 $hostname.$zone.
 update add icscf.$hostname.$zone. 30 NAPTR 0 0 "s" "SIP+D2T" "" _sip._tcp.icscf.$hostname.$zone.
