@@ -1,0 +1,13 @@
+{
+    "service_type": "http://schemas.mobile-cloud-networking.eu/occi/sm#imsaas",
+    "service_description": "ACeN IMSaaS",
+    "service_attributes": {
+      "acen.ims.platform": "",
+      "acen.ims.region": "",
+      "acen.ims.dns_zone": "",
+      "acen.ims.dns_key": "",
+      "acen.ims.signup_key": ""
+    },
+    "service_endpoint": "http://127.0.0.1:8890/imsaas/",
+    "depends_on": []
+}

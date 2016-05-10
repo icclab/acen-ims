@@ -36,13 +36,11 @@ class SOE(service_orchestrator.Execution):
         self.HOT_dir = os.path.abspath(os.path.join(cp, '../data/'))
         self.host_ips = None
 
-        # TODO parse input params here
-        self.platform = 'cs'
-        self.region = 'CloudStack'
-
-        self.dns_zone = 'example.com'
-        self.dns_key = 'zPDgJ0y0AEmCP7fzCi93zfBRYRcYdDDv5xrmwyv7rLgzqSnBlT8n0o1mrHTNpety1QUK55+nBKAedcRluAW39w=='
-        self.signup_key = 'mvPC5Zza'
+        self.platform = attributes['acen.ims.platform']
+        self.region = attributes['acen.ims.region']
+        self.dns_zone = attributes['acen.ims.dns_zone']
+        self.dns_key = attributes['acen.ims.dns_key']
+        self.signup_key = attributes['acen.ims.signup_key']
 
         self.deployer = util.get_deployer(
             token, url_type='public', tenant_name=tenant,
