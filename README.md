@@ -12,5 +12,34 @@ Although this work focuses on CloudStack deployments, the `./HEAT` directory als
 
 As Heat (and Hurtle) natively doesn't support orchestration on CloudStack deployments, it is necessary to setup [CloudStack Heat plugin](https://blog.zhaw.ch/icclab/openstack-heat-plugin-for-apache-cloudstack/) to add CloudStack resources.
 
+## Architecture
+
+```
++---------+
+| NETWORK |
++---------+      
+| +-----------+
+|-| DNS       |
+| +-----------+
+| +-----------+
+|-| Ellis     |
+| +-----------+
+| +-----------+
+|-| Homestead |
+| +-----------+
+| +-----------+
+|-| Homer     |
+| +-----------+
+| +-----------+
+|-| Sprout    |
+| +-----------+
+| +-----------+
+|-| Ralf      |
+| +-----------+
+| +-----------+
+|-| Bono      |
+  +-----------+
+```
+
 ## Acknowledgment
 This work was made possible by the [KTI ACEN project](http://blog.zhaw.ch/icclab/acen-begins/) in collaboration with [Citrix](https://www.citrix.com/) and [Exoscale](https://www.exoscale.ch/).
