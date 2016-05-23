@@ -3,12 +3,12 @@ IMSaaS Hurtle SO-SM bundle
 
 Deploys and provisions Project Clearwater as-a-service.
 
-Repository structure:
+Structure:
 
  * `./wsgi` contains WSGI application and SO implementation.
- * `./data` contains Heat orchestration templates (HOTs) describing infrastructual graph and basic scripts for initial resource setup.
+ * `./data` contains Heat orchestration templates (HOTs) describing infrastructural graph and basic scripts for initial resource setup.
 
-## RUN SM localy
+## RUN SM locally
 
 ```DESIGN_URI=http://keystone_url:35357/v2.0 OPENSHIFT_REPO_DIR=$PWD python ./wsgi/application```
 
@@ -84,3 +84,6 @@ Trigger delete of SO + service instance:
     $ curl -v -X DELETE http://localhost:8051/orchestrator/default \
           -H 'X-Auth-Token: '$KID \
           -H 'X-Tenant-Name: '$TENANT
+
+## Acknowledgment
+This work was made possible by the [KTI ACEN project](http://blog.zhaw.ch/icclab/acen-begins/) in collaboration with [Citrix](https://www.citrix.com/) and [Exoscale](https://www.exoscale.ch/).
