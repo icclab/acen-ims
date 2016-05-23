@@ -23,7 +23,7 @@ from sm.so.service_orchestrator import LOG
 
 from fabric.api import settings
 from fabric.api import sudo
-
+from multiprocessing import Process
 
 class SOE(service_orchestrator.Execution):
 
@@ -124,12 +124,13 @@ class SOE(service_orchestrator.Execution):
         self._provision_dns()
 
         # Provision ClearWater components
-        self._provision_cw_comp('homer')
-        self._provision_cw_comp('homestead')
-        self._provision_cw_comp('sprout')
-        self._provision_cw_comp('bono')
-        self._provision_cw_comp('ellis')
-        self._provision_cw_comp('ralf')
+        components = ['homer', 'homestead', 'sprout', 'bono', 'ellis', 'ralf']
+        processes = {}
+        for c in components:
+            processes[c] = Process(target=self._provision_cw_comp, args=(c,))
+            processes[c].start()
+        for k in processes.keys():
+            processes[k].join()
 
         self._delete_file(self.pem_path)
 
