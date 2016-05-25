@@ -32,11 +32,11 @@ e.g.:
 
 ```-H 'X-OCCI-Attribute: acen.ims.region="CloudStack"'```
 
-Currently on CloudStack platforms are supported. Note that orchestration of CloudStack resources is not supported by Heat nativly. To change that, please install and configure [Heat CloudStack plugin](https://github.com/icclab/cloudstack-heat). Also note that platform values must be one of the following values: `os` for OpenStack regions and `cs`for CloudStack regions.
+Currently on CloudStack platforms are supported. Note that orchestration of CloudStack resources is not supported by Heat natively. To change that, please install and configure [Heat CloudStack plugin](https://github.com/icclab/cloudstack-heat). Also note that platform values must be one of the following values: `cs`for CloudStack deployment with advanced networking zone or `exoscale` for Exoscale CloudStack deployment with basic networking zone.
 
-Regions must be valid OpenStack regions in your deployment. Always make sure that specified region and platform don't colide.
+Regions must be valid OpenStack regions in your deployment. Always make sure that specified region and platform don't collide.
 
-Other cloud environment specific values needs to be modified accordinglyto match your deployment in provided infrastructural templates.
+Other cloud environment specific values needs to be modified accordingly to match your deployment in provided infrastructural templates.
 
 ## Sample requests
 
