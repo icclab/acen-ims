@@ -1,0 +1,450 @@
+heat_template_version: 2013-05-23
+
+description: 'Template to deploy Project Clearwater infrastructure on Exoscale CloudStack deployment withExoscale CloudStack deployment with basic zone. Based on http://clearwater.readthedocs.org/en/release-65/Manual_Install/'
+
+parameters:
+  api_endpoint:
+    type: string
+    description: Cloudstack API endpoint
+
+  api_key:
+    type: string
+    description: API key
+
+  api_secret:
+    type: string
+    description: API secret key
+
+  service_offering_id:
+    type: string
+    description: CloudStack service offering ID
+    default: 84925525-7825-418b-845b-1aed179bbc40
+
+  template_id:
+    type: string
+    description: CloudStack template ID
+    default: 34fa65ce-483b-4ffa-88f8-75f6ebf670c1
+
+  zone_id:
+    type: string
+    description: CloudStack zone ID
+    default: 1747ef5e-5451-41fd-9f1a-58913bae9702
+
+  dns_zone:
+    type: string
+    description: Clearwater DNS zone
+    default: ims.com
+
+  dnssec_key:
+    type: string
+    description: DNS secret key
+    default: zPDgJ0y0AEmCP7fzCi93zfBRYRcYdDDv5xrmwyv7rLgzqSnBlT8n0o1mrHTNpety1QUK55+nBKAedcRluAW39w==
+
+  public_ssh_key:
+    type: string
+    description: Public SSH key
+    default: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoAv8WGeqtGket7cSai5zkYbOkh9a3FFH5yKQWHaxdGZfs9RU7CNbJJ39on4/+RoeffF3YK54EjYW4LtANFGzB8jwQuArO+3H1vLwxSkDTeHgBNfV2daGN00/9BmO1mBvVK3Re76rimvjH8Rm7y0Jc39RTZgeiNF0DL4uWOl2S0nVu2qyYZ7WIWNjPfknYeVUPNJUiEONBNfF7KPdrsGsUlyhQm0/O0+R3g4hU6PeAtOPTVUR43Z1mmrfW8oVp2i/0k3I9ld78suBe7De8IpwhDs/rrB7BNLQ34eA2Sgl/Xcjlkj7+XfiYIJ5Iv7KJcqJlhhnVQmBZ7G8kr46VfNvB vojtechcima@Vojtechs-MacBook-Pro.local
+
+  script:
+    type: string
+    description: Init script
+
+resources:
+  common_sg:
+    type: Cloudstack::Network::SecurityGroup
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: 'clearwater-common-sg'
+      rules:
+        - direction: ingress
+          startport: 22
+          endport: 22
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 161
+          endport: 162
+          protocol: udp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 2380
+          endport: 2380
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 4000
+          endport: 4000
+          protocol: tcp
+          cidr: 0.0.0.0/0
+
+  ralf_sg:
+    type: Cloudstack::Network::SecurityGroup
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: 'clearwater-ralf-sg'
+      rules:
+        - direction: ingress
+          startport: 10888
+          endport: 10888
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 7253
+          endport: 7253
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 11211
+          endport: 11211
+          protocol: tcp
+          cidr: 0.0.0.0/0
+
+  ralf:
+    type: Cloudstack::Compute::VirtualMachine
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: clearwater-ralf
+      template_id: { get_param: template_id }
+      service_offering_id: { get_param: service_offering_id }
+      zone_id: { get_param: zone_id }
+      security_group_ids:
+        - get_attr: [ ralf_sg, id ]
+        - get_attr: [ common_sg, id ]
+      user_data:
+        str_replace:
+          template: { get_param: script }
+          params:
+            $public_ssh_key: { get_param: public_ssh_key }
+
+  homer_sg:
+    type: Cloudstack::Network::SecurityGroup
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: 'clearwater-homer-sg'
+      rules:
+        - direction: ingress
+          startport: 7888
+          endport: 7888
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 7000
+          endport: 7000
+          protocol: tcp
+          cidr: 0.0.0.0/0
+
+  homer:
+    type: Cloudstack::Compute::VirtualMachine
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: clearwater-homer
+      template_id: { get_param: template_id }
+      service_offering_id: { get_param: service_offering_id }
+      zone_id: { get_param: zone_id }
+      security_group_ids:
+        - get_attr: [ homer_sg, id ]
+        - get_attr: [ common_sg, id ]
+      user_data:
+        str_replace:
+          template: { get_param: script }
+          params:
+            $public_ssh_key: { get_param: public_ssh_key }
+
+  ellis_sg:
+    type: Cloudstack::Network::SecurityGroup
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: 'clearwater-ellis-sg'
+      rules:
+        - direction: ingress
+          startport: 80
+          endport: 80
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 443
+          endport: 443
+          protocol: tcp
+          cidr: 0.0.0.0/0
+
+  ellis:
+    type: Cloudstack::Compute::VirtualMachine
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: clearwater-ellis
+      template_id: { get_param: template_id }
+      service_offering_id: { get_param: service_offering_id }
+      zone_id: { get_param: zone_id }
+      security_group_ids:
+        - get_attr: [ ellis_sg, id ]
+        - get_attr: [ common_sg, id ]
+      user_data:
+        str_replace:
+          template: { get_param: script }
+          params:
+            $public_ssh_key: { get_param: public_ssh_key }
+
+  bono_sg:
+    type: Cloudstack::Network::SecurityGroup
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: 'clearwater-bono-sg'
+      rules:
+        - direction: ingress
+          startport: 3478
+          endport: 3478
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 3478
+          endport: 3478
+          protocol: udp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 5060
+          endport: 5060
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 5060
+          endport: 5060
+          protocol: udp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 5062
+          endport: 5062
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 32768
+          endport: 65353
+          protocol: udp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 5058
+          endport: 5058
+          protocol: tcp
+          cidr: 0.0.0.0/0
+
+  bono:
+    type: Cloudstack::Compute::VirtualMachine
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: clearwater-bono
+      template_id: { get_param: template_id }
+      service_offering_id: { get_param: service_offering_id }
+      zone_id: { get_param: zone_id }
+      security_group_ids:
+        - get_attr: [ bono_sg, id ]
+        - get_attr: [ common_sg, id ]
+      user_data:
+        str_replace:
+          template: { get_param: script }
+          params:
+            $public_ssh_key: { get_param: public_ssh_key }
+
+  sprout_sg:
+    type: Cloudstack::Network::SecurityGroup
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: 'clearwater-sprout-sg'
+      rules:
+        - direction: ingress
+          startport: 5054
+          endport: 5054
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 5052
+          endport: 5052
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 11211
+          endport: 11211
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 7253
+          endport: 7253
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 7000
+          endport: 7000
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 9160
+          endport: 9160
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 9888
+          endport: 9888
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 443
+          endport: 443
+          protocol: tcp
+          cidr: 0.0.0.0/0
+
+  sprout:
+    type: Cloudstack::Compute::VirtualMachine
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: clearwater-sprout
+      template_id: { get_param: template_id }
+      service_offering_id: { get_param: service_offering_id }
+      zone_id: { get_param: zone_id }
+      security_group_ids:
+        - get_attr: [ sprout_sg, id ]
+        - get_attr: [ common_sg, id ]
+      user_data:
+        str_replace:
+          template: { get_param: script }
+          params:
+            $public_ssh_key: { get_param: public_ssh_key }
+
+  homestead_sg:
+    type: Cloudstack::Network::SecurityGroup
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: 'clearwater-homestead-sg'
+      rules:
+        - direction: ingress
+          startport: 8888
+          endport: 8889
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 7000
+          endport: 7000
+          protocol: tcp
+          cidr: 0.0.0.0/0
+
+  homestead:
+    type: Cloudstack::Compute::VirtualMachine
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: clearwater-homestead
+      template_id: { get_param: template_id }
+      service_offering_id: { get_param: service_offering_id }
+      zone_id: { get_param: zone_id }
+      security_group_ids:
+        - get_attr: [ homestead_sg, id ]
+        - get_attr: [ common_sg, id ]
+      user_data:
+        str_replace:
+          template: { get_param: script }
+          params:
+            $public_ssh_key: { get_param: public_ssh_key }
+
+  dns_server_sg:
+    type: Cloudstack::Network::SecurityGroup
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: 'clearwater-dns-server-sg'
+      rules:
+        - direction: ingress
+          startport: 53
+          endport: 53
+          protocol: tcp
+          cidr: 0.0.0.0/0
+        - direction: ingress
+          startport: 53
+          endport: 53
+          protocol: udp
+          cidr: 0.0.0.0/0
+
+  dns_server:
+    type: Cloudstack::Compute::VirtualMachine
+    properties:
+      api_endpoint: { get_param: api_endpoint }
+      api_key: { get_param: api_key }
+      api_secret: { get_param: api_secret }
+      name: clearwater-dns
+      template_id: { get_param: template_id }
+      service_offering_id: { get_param: service_offering_id }
+      zone_id: { get_param: zone_id }
+      security_group_ids:
+        - get_attr: [ dns_server_sg, id ]
+        - get_attr: [ common_sg, id ]
+      user_data:
+        str_replace:
+          template: { get_param: script }
+          params:
+            $public_ssh_key: { get_param: public_ssh_key }
+
+outputs:
+  ralf_external_ip:
+    description: Instance external IP address
+    value: { get_attr: [ ralf, network_ip ] }
+  ralf_private_ip:
+    description: Instance internal IP address
+    value: { get_attr: [ ralf, network_ip ] }
+  ellis_external_ip:
+    description: Instance external IP address
+    value: { get_attr: [ ellis, network_ip ] }
+  ellis_private_ip:
+    description: Instance internal IP address
+    value: { get_attr: [ ellis, network_ip ] }
+  homer_external_ip:
+    description: Instance external IP address
+    value: { get_attr: [ homer, network_ip ] }
+  homer_private_ip:
+    description: Instance internal IP address
+    value: { get_attr: [ homer, network_ip ] }
+  sprout_external_ip:
+    description: Instance external IP address
+    value: { get_attr: [ sprout, network_ip] }
+  sprout_private_ip:
+    description: Instance internal IP address
+    value: { get_attr: [ sprout, network_ip] }
+  homestead_external_ip:
+    description: Instance external IP address
+    value: { get_attr: [ homestead, network_ip ] }
+  homestead_private_ip:
+    description: Instance internal IP address
+    value: { get_attr: [ homestead, network_ip ] }
+  bono_external_ip:
+    description: Instance external IP address
+    value: { get_attr: [ bono, network_ip ] }
+  bono_private_ip:
+    description: Instance internal IP address
+    value: { get_attr: [ bono, network_ip ] }
+  dns_external_ip:
+    description: Instance external IP address
+    value: { get_attr: [ dns_server, network_ip ] }
+  dns_private_ip:
+    description: Instance internal IP address
+    value: { get_attr: [ dns_server, network_ip ] }

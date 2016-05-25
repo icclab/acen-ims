@@ -4,12 +4,12 @@ IMSaaS SO.
 This Service Orchestrator (SO) deploys and provisions Project
 Clearwater's components and delivers IMS as-a-service.
 
-Currently, the components can be orchestrated upon
-OpenStack and CloudStack platforms (os<->cs, cs<->cs, cs<->os)
+Currently, the components can only be orchestrated upon
+a CloudStack platform.
 
-Therefore platform types must be one of the following options:
-cs - CloudStack platform
-os - OpenStack platform
+Therefore the platform type is for now limited to:
+cs - CloudStack deployments with advanced networking zone
+exoscale - Exoscale CloudStack deployment with basic networking zone
 """
 
 import os
